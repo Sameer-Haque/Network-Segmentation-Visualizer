@@ -36,10 +36,6 @@ The OpenWRT VM should have 4 interfaces:
 
 The networks for adapters 3 and 4 should be different.
 
-### NOTES:
-- I swapped out snmp.yml in the snmp_exporter config for a newer file from the repo, because the included one from the repo we are using currently is too old. I plan to try generating a more specific one later. The default file is expected to cover most cases though, so we might not need to generate a custom config.
-- I tweaked Loki's config slightly to disable structured metadata, as the Loki container does not actually support this. Apparently this is a bug; Loki isn't supposed to enable that by default, but it does.
-
 ### References:
 
 [0] - https://cdimage.debian.org/debian-cd/current/amd64/iso-cd/
