@@ -2,7 +2,7 @@
 
 ## Requirements:
 - Oracle Virtualbox 7
-- Debian 13.3.0 AMD64 netinstall ISO ( See [0] )
+- Debian 13 AMD64 netinstall ISO ( See [0] )
 - OpenWRT 24.10.5 x86-64 generic ext4 combined IMG ( See [1] )
 
 ## Central router setup:
@@ -35,6 +35,14 @@ The OpenWRT VM should have 4 interfaces:
 - Adapter 4 should be set to "Internal Network"
 
 The networks for adapters 3 and 4 should be different.
+
+## Notes
+
+### Missing Netflow template error
+
+If you experience errors due to a missing Netflow template, this is likely because you restarted the application and OpenWRT's softflowd has not re-sent it. You can SSH into OpenWRT and use the following command to tell softflowd to send the template again:
+
+```softflowctl send-template```
 
 ### References:
 
