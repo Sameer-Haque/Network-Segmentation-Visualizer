@@ -2,7 +2,7 @@
 
 ## Grafana fails to start with "can't create directory '/var/lib/grafana/whatever' permission denied"
 
-The file permissions on "config/grafana/lib/" may be incorrect. You can fix this by changing the file owner to root, or by giving all users write permission, on all files under that directory. To give all users write permissions on the appropriate files, from the repository root:
+The file permissions on "config/grafana/lib/" may be incorrect. The simplest fix for this is giving all users write permission on all files under that directory. To give all users write permissions on the appropriate files, from the repository root:
 
 ```chmod -Rv a+w config/grafana/lib```
 
