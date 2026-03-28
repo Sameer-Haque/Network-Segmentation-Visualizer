@@ -18,6 +18,7 @@
   "editable": true,
   "fiscalYearStartMonth": 0,
   "graphTooltip": 0,
+  "id": 9,
   "links": [],
   "panels": [
     {
@@ -66,7 +67,7 @@
         "showThresholdMarkers": false,
         "sizing": "auto"
       },
-      "pluginVersion": "12.4.1",
+      "pluginVersion": "12.3.2+security-01",
       "targets": [
         {
           "datasource": {
@@ -132,7 +133,7 @@
         "sizing": "auto",
         "text": {}
       },
-      "pluginVersion": "12.4.1",
+      "pluginVersion": "12.3.2+security-01",
       "targets": [
         {
           "datasource": {
@@ -386,7 +387,7 @@
         "cellHeight": "sm",
         "showHeader": true
       },
-      "pluginVersion": "12.4.1",
+      "pluginVersion": "12.3.2+security-01",
       "targets": [
         {
           "datasource": {
@@ -564,7 +565,7 @@
           "sort": "desc"
         }
       },
-      "pluginVersion": "12.4.1",
+      "pluginVersion": "12.3.2+security-01",
       "targets": [
         {
           "datasource": {
@@ -703,7 +704,7 @@
           "sort": "desc"
         }
       },
-      "pluginVersion": "12.4.1",
+      "pluginVersion": "12.3.2+security-01",
       "targets": [
         {
           "datasource": {
@@ -711,7 +712,7 @@
             "uid": "PBFA97CFB590B2093"
           },
           "editorMode": "builder",
-          "expr": "irate(ifOutUcastPkts{job=\"$Job\"}[5m])",
+          "expr": "irate(ifHCOutUcastPkts{job=\"$Job\"}[5m])",
           "instant": false,
           "intervalFactor": 1,
           "legendFormat": "Out: {{ifName}} ({{ifAlias}})",
@@ -723,7 +724,7 @@
             "uid": "PBFA97CFB590B2093"
           },
           "editorMode": "builder",
-          "expr": "irate(ifInNUcastPkts{job=\"$Job\"}[5m])",
+          "expr": "irate(ifHCInUcastPkts{job=\"$Job\"}[5m])",
           "intervalFactor": 1,
           "legendFormat": "In: {{ifName}} ({{ifAlias}})",
           "range": true,
@@ -732,21 +733,6 @@
       ],
       "title": "Out / In Unicast",
       "type": "timeseries"
-    },
-    {
-      "gridPos": {
-        "h": 8,
-        "w": 24,
-        "x": 0,
-        "y": 30
-      },
-      "id": 2,
-      "libraryPanel": {
-        "name": "Out / In",
-        "uid": "dfgveaan0agw0c"
-      },
-      "title": "Out / In",
-      "type": "library-panel-ref"
     },
     {
       "datasource": {
@@ -835,7 +821,146 @@
         "h": 7,
         "w": 24,
         "x": 0,
-        "y": 38
+        "y": 30
+      },
+      "id": 10,
+      "options": {
+        "dataLinks": [],
+        "legend": {
+          "calcs": [
+            "mean",
+            "lastNotNull",
+            "max",
+            "min"
+          ],
+          "displayMode": "table",
+          "placement": "right",
+          "showLegend": true
+        },
+        "tooltip": {
+          "hideZeros": false,
+          "mode": "multi",
+          "sort": "desc"
+        }
+      },
+      "pluginVersion": "12.3.2+security-01",
+      "targets": [
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "PBFA97CFB590B2093"
+          },
+          "editorMode": "builder",
+          "expr": "irate(ifOutOctets{job=\"$Job\"}[5m])",
+          "instant": false,
+          "intervalFactor": 1,
+          "legendFormat": "Out: {{ifName}} ({{ifAlias}})",
+          "refId": "A"
+        },
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "PBFA97CFB590B2093"
+          },
+          "editorMode": "builder",
+          "expr": "irate(ifInOctets{job=\"$Job\"}[5m])",
+          "intervalFactor": 1,
+          "legendFormat": "In: {{ifName}} ({{ifAlias}})",
+          "range": true,
+          "refId": "B"
+        }
+      ],
+      "title": "Out / In",
+      "type": "timeseries"
+    },
+    {
+      "datasource": {
+        "type": "prometheus",
+        "uid": "PBFA97CFB590B2093"
+      },
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "mode": "palette-classic"
+          },
+          "custom": {
+            "axisBorderShow": false,
+            "axisCenteredZero": false,
+            "axisColorMode": "text",
+            "axisLabel": "",
+            "axisPlacement": "auto",
+            "barAlignment": 0,
+            "barWidthFactor": 0.6,
+            "drawStyle": "line",
+            "fillOpacity": 20,
+            "gradientMode": "opacity",
+            "hideFrom": {
+              "legend": false,
+              "tooltip": false,
+              "viz": false
+            },
+            "insertNulls": false,
+            "lineInterpolation": "linear",
+            "lineWidth": 1,
+            "pointSize": 5,
+            "scaleDistribution": {
+              "type": "linear"
+            },
+            "showPoints": "never",
+            "showValues": false,
+            "spanNulls": false,
+            "stacking": {
+              "group": "A",
+              "mode": "none"
+            },
+            "thresholdsStyle": {
+              "mode": "off"
+            }
+          },
+          "mappings": [],
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green",
+                "value": 0
+              },
+              {
+                "color": "red",
+                "value": 80
+              }
+            ]
+          },
+          "unit": "decbytes"
+        },
+        "overrides": [
+          {
+            "matcher": {
+              "id": "byValue",
+              "options": {
+                "op": "gte",
+                "reducer": "allIsZero",
+                "value": 0
+              }
+            },
+            "properties": [
+              {
+                "id": "custom.hideFrom",
+                "value": {
+                  "legend": true,
+                  "tooltip": true,
+                  "viz": false
+                }
+              }
+            ]
+          }
+        ]
+      },
+      "gridPos": {
+        "h": 7,
+        "w": 24,
+        "x": 0,
+        "y": 45
       },
       "id": 8,
       "options": {
@@ -857,7 +982,7 @@
           "sort": "desc"
         }
       },
-      "pluginVersion": "12.4.1",
+      "pluginVersion": "12.3.2+security-01",
       "targets": [
         {
           "datasource": {
@@ -913,7 +1038,6 @@
         },
         "refresh": 1,
         "regex": "",
-        "regexApplyTo": "value",
         "type": "query"
       },
       {
@@ -935,7 +1059,6 @@
         },
         "refresh": 1,
         "regex": "",
-        "regexApplyTo": "value",
         "type": "query"
       }
     ]
@@ -948,6 +1071,5 @@
   "timezone": "browser",
   "title": "Snmp Dashboard r1",
   "uid": "adj7795",
-  "version": 4,
-  "weekStart": ""
+  "version": 1
 }
