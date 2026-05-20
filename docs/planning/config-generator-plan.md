@@ -43,10 +43,15 @@ Seeing as the data storage, processing, and Netflow/sFlow collector configuratio
 
 
 ## Components 
+
 Scripting language: [Python 3][0] 
+
 File formats supported: YAML 
+
 YAML library: [PyYAML][1]
+
 Network mapping tool: [nmap][2]
+
 nmap library: [python-nmap][3]
 
 The generator should be a Python script run by the end user as setup for the application. The script can be rerun to regenerate the configuration in the event of changes to the network SNMP configuration. When regenerating, the old configuration files should be backed up, not overwritten. The basic program flow should be something like this:
