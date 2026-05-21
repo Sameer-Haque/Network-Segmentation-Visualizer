@@ -176,7 +176,6 @@ flowchart TD
 |---|---|
 | OpenWRT |  Supported (PoC) |
 | Cisco |  In progress (Phase 2) |
-| Fortinet |  In progress (Phase 2) |
 | TP-Link |  In progress (Phase 2) |
 
 ---
