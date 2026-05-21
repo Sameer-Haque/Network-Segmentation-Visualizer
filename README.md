@@ -174,10 +174,10 @@ flowchart TD
 
 | Vendor | Status |
 |---|---|
-| OpenWRT | ✅ Supported (PoC) |
-| Cisco | 🔄 In progress (Phase 2) |
-| Fortinet | 🔄 In progress (Phase 2) |
-| SDN API | 📋 Planned (Phase 2) |
+| OpenWRT |  Supported (PoC) |
+| Cisco |  In progress (Phase 2) |
+| Fortinet |  In progress (Phase 2) |
+| SDN API |  Planned (Phase 2) |
 
 ---
 
