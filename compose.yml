@@ -1,75 +1,171 @@
 name: network-visualizer
-services:  
-  node-map:
-    build: 
-        context: ./scripts
-        dockerfile: dockerfile
-    container_name: node-map
-    volumes: [./scripts:/nodemap]
-    networks: ["container-network"]
+
+services:
   grafana:
     image: grafana/grafana:latest
+    container_name: grafana
     restart: unless-stopped
-    environment: ["GF_INSTALL_PLUGINS=vertamedia-clickhouse-datasource"]
-    expose: ["3000/tcp"]
-    volumes: ["./config/grafana/provisioning:/etc/grafana/provisioning", "./config/grafana/lib:/var/lib/grafana"]
-    networks: ["container-network"]
+    environment:
+      - GF_INSTALL_PLUGINS=vertamedia-clickhouse-datasource
+    ports:
+      - "3000:3000/tcp"
+    networks:
+      - back-end
+    volumes:
+      - ./config/grafana/provisioning:/etc/grafana/provisioning
+      - ./config/grafana/lib:/var/lib/grafana
+
+# This section commented out for now
+# May be used for future features
+#
+#  loki:
+#    image: grafana/loki:latest
+#    container_name: loki
+#    restart: unless-stopped
+#    ports:
+#      - "3100:3100/tcp"
+#    networks:
+#      - back-end
+#
+#  promtail:
+#    image: grafana/promtail:latest
+#    container_name: promtail
+#    restart: unless-stopped
+#    ports:
+#      - "9080:9080/tcp"
+#    networks:
+#      - back-end
+#
+#  syslog-ng:
+#    image: balabit/syslog-ng:latest
+#    container_name: syslog-ng
+#    restart: unless-stopped
+#    ports:
+#      - "514:5140/udp"
+#      - "601:6010/tcp"
+#      - "6514:6514/tcp"
+#    networks:
+#      - back-end
+#
 
   prometheus:
     image: prom/prometheus:latest
+    container_name: prometheus
     restart: unless-stopped
-    expose: ["9090/tcp"]
-    volumes: ["./config/prometheus/prometheus.yml:/etc/prometheus/prometheus.yml:ro"]
-    networks: ["container-network"]
+    ports:
+      - "9090:9090/tcp"
+    networks:
+      - back-end
+    volumes:
+      - ./config/prometheus/prometheus.yml:/etc/prometheus/prometheus.yml
 
   snmp-exporter:
     image: prom/snmp-exporter:latest
+    container_name: snmp-exporter
     restart: unless-stopped
-    expose: ["9116/tcp"]
-    volumes: ["./config/snmp-exporter/snmp.yml:/etc/snmp_exporter/snmp.yml:ro"]
-    command: ["--config.file=/etc/snmp_exporter/snmp.yml"]
-    networks: ["container-network"]
+    ports:
+      - "9116:9116/tcp"
+    networks:
+      - back-end
+    volumes:
+      - ./config/snmp-exporter/snmp.yml:/etc/snmp-exporter
+    command:
+      - '--config.file=/etc/snmp_exporter/snmp.yml'
+
+# This section commented out for now
+# Not required for PoC features
+# May be used for future features
+#
+#  node-exporter:
+#    image: prom/node-exporter:latest
+#    container_name: node-exporter
+#    restart: unless-stopped
+#    ports:
+#      - "9100:9100/tcp"
+#    networks:
+#      - back-end
+#
+
+# This section commented out for now
+# Not required for PoC features
+# May be used for future features
+# The port for cadvisor needs to be changed before enabling it to prevent conflict with goflow2
+#
+#  cadvisor:
+#    image: ghcr.io/google/cadvisor:latest
+#    container_name: cadvisor
+#    restart: unless-stopped
+#    ports:
+#      - "8080:8080/tcp"
+#    networks:
+#      - back-end
+#    volumes:
+#      - /:/rootfs:ro
+#      - /var/run:/var/run:rw
+#      - /sys:/sys:ro
+#      - /var/lib/docker/:/var/lib/docker:ro
+#
 
   goflow2:
     image: netsampler/goflow2:latest
+    container_name: goflow2
     restart: unless-stopped
-    depends_on: ["kafka"]
-    expose: ["6343/udp", "2055/udp", "8080/tcp"]
-    command: ["-transport.kafka.brokers=kafka:9092", "-transport=kafka", "-transport.kafka.topic=flows", "-format=bin"]
-    networks: ["container-network"]
+    depends_on:
+      - kafka
+    ports:
+      - "6343:6343/udp"
+      - "2055:2055/udp"
+      - "8080:8080/tcp"
+    networks:
+      - back-end
+    command:
+      - -transport.kafka.brokers=kafka:9092
+      - -transport=kafka
+      - -transport.kafka.topic=flows
+      - -format=bin
 
   clickhouse:
     image: clickhouse/clickhouse-server:latest
+    container_name: clickhouse
     restart: unless-stopped
-    depends_on: ["kafka"]
-    environment: ["CLICKHOUSE_DO_NOT_CHOWN=1", "CLICKHOUSE_PASSWORD=visualizer"]
-    expose: ["8123/tcp", "9000/tcp"]
-    volumes: ["./config/clickhouse:/docker-entrypoint-initdb.d/:ro", "./config/clickhouse/flow.proto:/var/lib/clickhouse/format_schemas/flow.proto:ro", "./config/clickhouse/protocols.csv:/var/lib/clickhouse/user_files/protocols.csv:ro"]
-    networks: ["container-network"]
+    depends_on:
+      - kafka
+    environment:
+      - CLICKHOUSE_DO_NOT_CHOWN=1
+      - CLICKHOUSE_PASSWORD=visualizer
+    ports:
+      - "8123:8123/tcp"
+    networks:
+      - back-end
+    volumes:
+      - ./config/clickhouse:/docker-entrypoint-initdb.d/
+      - ./config/clickhouse/flow.proto:/var/lib/clickhouse/format_schemas/flow.proto
+      - ./config/clickhouse/protocols.csv:/var/lib/clickhouse/user_files/protocols.csv
 
+# A note on the Kafka config
+# We need KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR=1 because we are only running 1 Kafka server
+# The default setting assumes you are running a full cluster of at least 3 servers
   kafka:
     image: apache/kafka:latest
+    container_name: kafka
     restart: unless-stopped
-    environment: ["ALLOW_PLAINTEXT_LISTENER=yes", "KAFKA_DELETE_TOPIC_ENABLE=true", "KAFKA_BROKER_ID=1", "KAFKA_NODE_ID=1", "KAFKA_CONTROLLER_QUORUM_VOTERS=1@kafka:9093", "KAFKA_CONTROLLER_LISTENER_NAMES=CONTROLLER", "KAFKA_INTER_BROKER_LISTENER_NAME=IB", "KAFKA_PROCESS_ROLES=broker,controller", "KAFKA_LISTENER_SECURITY_PROTOCOL_MAP=CONTROLLER:PLAINTEXT,BROKER:PLAINTEXT,IB:PLAINTEXT", "KAFKA_LISTENERS=CONTROLLER://:9093,BROKER://:9092,IB://:9094", "KAFKA_ADVERTISED_LISTENERS=BROKER://kafka:9092,IB://kafka:9094", "KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR=1"]
-    expose: ["9092/tcp", "9093/tcp", "9094/tcp"]
-    networks: ["container-network"]
-
-  snmpsim:
-    image: tandrup/snmpsim:latest
-    restart: unless-stopped
-    expose: ["161/udp"]
-    volumes: ["./testing-files/snmpsim:/usr/local/snmpsim/data:ro"]
-    networks: ["container-network"]
-    profiles: ["test-snmp"]
-
-  netflow-generator:
-    image: networkstatic/nflow-generator:latest
-    restart: unless-stopped
-    depends_on: ["goflow2"]
-    command: ["-t", "goflow2", "-p", "2055"]
-    networks: ["container-network"]
-    profiles: ["test-netflow"]
+    environment:
+      - ALLOW_PLAINTEXT_LISTENER=yes
+      - KAFKA_DELETE_TOPIC_ENABLE=true
+      - KAFKA_BROKER_ID=1
+      - KAFKA_NODE_ID=1
+      - KAFKA_CONTROLLER_QUORUM_VOTERS=1@kafka:9093
+      - KAFKA_CONTROLLER_LISTENER_NAMES=CONTROLLER
+      - KAFKA_INTER_BROKER_LISTENER_NAME=IB
+      - KAFKA_PROCESS_ROLES=broker,controller
+      - KAFKA_LISTENER_SECURITY_PROTOCOL_MAP=CONTROLLER:PLAINTEXT,BROKER:PLAINTEXT,IB:PLAINTEXT
+      - KAFKA_LISTENERS=CONTROLLER://:9093,BROKER://:9092,IB://:9094
+      - KAFKA_ADVERTISED_LISTENERS=BROKER://kafka:9092,IB://:9094
+      - KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR=1
+    ports:
+      - "9092:9092/tcp"
+    networks:
+      - back-end
 
 networks:
-  container-network:
-    driver: bridge
+  back-end: {}
