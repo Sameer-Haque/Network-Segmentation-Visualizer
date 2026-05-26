@@ -1,0 +1,23 @@
+FROM debian:13-slim
+
+WORKDIR /node-map
+
+RUN apt-get update && apt-get install -y \
+    python3 \
+    python3-pip \
+    python3-venv \
+    python3-dev \
+    libsnmp-dev \
+    snmp \
+    gcc \
+    && rm -rf /var/lib/apt/lists/*
+
+RUN python3 -m venv /opt/venv \
+    && /opt/venv/bin/pip install --upgrade pip \
+    && /opt/venv/bin/pip install \
+        easysnmp \
+        clickhouse-connect
+
+ENV PATH="/opt/venv/bin:$PATH"
+
+CMD ["sleep", "infinity"]

@@ -3,10 +3,10 @@ name: network-visualizer
 services:
   node-map:
     build: 
-        context: ./scripts
+        context: ./node-map
         dockerfile: dockerfile
     container_name: node-map
-    volumes: [./scripts:/nodemap]
+    volumes: [./node-map:/nodemap]
     networks: ["container-network"]
   grafana:
     image: grafana/grafana:latest
