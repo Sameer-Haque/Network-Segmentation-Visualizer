@@ -7,7 +7,6 @@ services:
         dockerfile: dockerfile
     container_name: node-map
     volumes: [./node-map:/nodemap]
-    networks: ["container-network"]
   grafana:
     image: grafana/grafana:latest
     container_name: grafana
