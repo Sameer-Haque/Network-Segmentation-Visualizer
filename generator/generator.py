@@ -4,13 +4,25 @@ import ipaddress
 import os
 import socket
 
+# needs python-nmap
 import nmap
+# needs snimpy
 from snimpy.manager import Manager as M
 from snimpy.manager import load
+# needs PyYAML
 import yaml
 
+# IF-MIB, SNMPv2-MIB, HOST-RESOURCES-MIB
 BASE_MODULES = ["if_mib", "system", "hrSystem", "hrDevice", "hrStorage"]
 
+# Currently supported vendors:
+# - OpenWRT
+# - Cisco
+# - TP-Link
+# Profile format:
+# - label = vendor name
+# - extra_modules = additional SNMP MIB modules supported by vendor
+# - keywords = used for detection based on presence in sysDescr
 VENDOR_PROFILES = {
     "openwrt": {
         "label": "openwrt",
@@ -27,15 +39,21 @@ VENDOR_PROFILES = {
         "extra_modules": ["ip_mib"],
         "keywords": ["tp-link", "tplink", "archer", "tl-"],
     },
+    # TODO: Add D-Link
 }
 
+# Cisco and TP-Link are identified by the presence of the MIB trees
+# associated with them
+# OpenWRT is identified by Net-SNMP's MIB tree, which shouldn't lead to
+# false positives so long as sysDescr detection is functioning
 SYSOID_VENDOR_MAP = {
     ".1.3.6.1.4.1.9.":     "cisco",
     ".1.3.6.1.4.1.8072.":  "openwrt",
     ".1.3.6.1.4.1.11863.": "tplink",
 }
 
-
+# This could definitely use some work
+# TODO: Detect actual subnet mask instead of hardcoding /24 as a guess
 def get_local_network():
     s = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
     s.connect(("8.8.8.8", 80))
@@ -43,7 +61,9 @@ def get_local_network():
     s.close()
     return str(ipaddress.IPv4Network(f"{ip}/24", strict=False))
 
-
+# System vendors are identified via the presence of certain OIDs
+# and by keywords in SNMPv2-MIB sysDescr
+# nmap OS detection is used as a supplement to sysDescr
 def detect_vendor(sys_oid, sys_descr, nmap_hints):
     for prefix, vendor_key in SYSOID_VENDOR_MAP.items():
         if sys_oid.startswith(prefix):
@@ -57,7 +77,7 @@ def detect_vendor(sys_oid, sys_descr, nmap_hints):
 
     return None
 
-
+# nmap scan and snimpy data gathering
 def scan(network, community, version):
     nm = nmap.PortScanner()
     nm.scan(hosts=network, arguments="-sU -p161 --open -T4 -O --host-timeout 30s")
@@ -89,8 +109,10 @@ def scan(network, community, version):
 
     return hosts
 
-
+# Build Prometheus config for PyYAML dump
+# TODO: Add support for alerting rules
 def build_prometheus_config(hosts, community, version):
+	# This is a temporary kludge and should be more flexible
     auth_name = f"public_v{version}"
 
     static_jobs = [
@@ -125,9 +147,12 @@ def build_prometheus_config(hosts, community, version):
 
 def main():
     parser = argparse.ArgumentParser()
+    # TODO: Add --help
+    # TODO: Add --auth for specifying which snmp-exporter auth to use
     parser.add_argument("--network",   default=None)
     parser.add_argument("--community", default="public")
     parser.add_argument("--version",   type=int, default=2)
+    # This arg could be more flexible
     parser.add_argument("--output",    default="./config")
     args = parser.parse_args()
 
@@ -135,6 +160,7 @@ def main():
     hosts   = scan(network, args.community, args.version)
     cfg     = build_prometheus_config(hosts, args.community, args.version)
 
+    # TODO: There should probably be exception catching around file I/O
     out = os.path.join(args.output, "prometheus", "prometheus.yml")
     os.makedirs(os.path.dirname(out), exist_ok=True)
     with open(out, "w") as f:
