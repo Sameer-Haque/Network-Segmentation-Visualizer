@@ -1,11 +1,12 @@
 <h1> Grafana Dashboard Guide </h1>
-A practical guide to creating, importing, and building dashboards in Grafana — covering data sources like ClickHouse (IPFIX), Prometheus (SNMP), and Infinity (files/APIs).
+A practical guide to creating, importing, and building dashboards in Grafana</br>
+Covering data sources like ClickHouse (IPFIX), Prometheus (SNMP), and Infinity (files/APIs).
 
 <h1>Data Sources Overview</h1>
 
-ClickHouse — IPFIX / Flow Data
-Prometheus — SNMP / Metrics
-Infinity — Files & APIs
+ClickHouse — IPFIX / Flow Data</br>
+Prometheus — SNMP / Metrics</br>
+Infinity — Files & APIs</br>
 
 
 Building a Visualization with PromQL
@@ -36,7 +37,7 @@ When it's useful: Sharing individual panels across teams, or reusing a well-craf
 
 
 <h2>2. Import Dashboard</h2>
-Use this when: You want to load a complete, pre-built dashboard — either from grafana.com/dashboards or a locally exported JSON file.
+Use this when: You want to load a complete, pre-built dashboard either from grafana.com/dashboards or a locally exported JSON file.
 
 From the left sidebar: "+" → "Import"
 Options:
@@ -68,41 +69,38 @@ This is the most powerful and commonly used option for custom monitoring setups.
 
 <h1> Data Sources Overview </h1>
 <h2>ClickHouse — IPFIX / Flow Data</h2>
-ClickHouse is a high-performance columnar database well suited for storing and querying large volumes of IPFIX (IP Flow Information Export) and NetFlow data.
-Why ClickHouse for IPFIX?
-IPFIX generates extremely high-cardinality, time-series flow records — millions of rows per minute in production environments. ClickHouse handles this through:
+ClickHouse is a high-performance columnar database well suited for storing and querying large volumes of IPFIX (IP Flow Information Export) and NetFlow data.</br>
+Why ClickHouse for IPFIX?</br>
+IPFIX generates extremely high-cardinality, time-series flow records. Millions of rows per minute in production environments. ClickHouse handles this through:</br>
 
-Columnar storage — only reads the columns needed for a query
-MergeTree engine — optimized for time-ordered data ingestion and range queries
-Aggregation at query time — GROUP BY srcIP, dstIP, port queries over billions of rows complete in seconds
+Columnar storage — only reads the columns needed for a query</br>
+MergeTree engine — optimized for time-ordered data ingestion and range queries</br>
+Aggregation at query time — GROUP BY srcIP, dstIP, port queries over billions of rows complete in seconds</br>
 
 <h2>Prometheus — SNMP / Metrics</h2>
-Prometheus is a pull-based metrics system that scrapes targets at regular intervals and stores time-series data. It is the standard data source for SNMP-polled network metrics collected via tools like SNMP Exporter.
-Why Prometheus for SNMP?
-SNMP is the de facto standard for polling network device metrics (interface counters, CPU, memory, etc.). The Prometheus SNMP Exporter:
+Prometheus is a pull-based metrics system that scrapes targets at regular intervals and stores time-series data. It is the standard data source for SNMP-polled network metrics collected via tools like SNMP Exporter.</br>
+Why Prometheus for SNMP?</br>
+SNMP is the de facto standard for polling network device metrics (interface counters, CPU, memory, etc.).</br>
+<h4> The Prometheus SNMP Exporter: </h4>
+<ul>
+<li> Receives scrape requests from Prometheus</li>
+<li>Translates them into SNMP GET/WALK requests to the target device</li>
+<li>Returns metrics in Prometheus exposition format</li>
+</ul>
 
-Receives scrape requests from Prometheus
-Translates them into SNMP GET/WALK requests to the target device
-Returns metrics in Prometheus exposition format
-
-This gives you long-term storage, alerting, and PromQL — a powerful query language — on top of your SNMP data.
+This gives you long-term storage, alerting, and PromQL is a powerful query language. 
 
 <h2>Infinity — Files & APIs</h2>
-The Grafana Infinity plugin is a general-purpose data source that can query virtually any external data, including:
-Source TypeExamples: REST API, JSON/XML, HTTP, endpointCSV filesStatic exports, S3-hosted files, JSON files, Config exports, enrichment data, GraphQL, GraphQL API endpoints, Google Sheets, Spreadsheets as a data source
-Why use Infinity?
-Infinity fills the gap when your data doesn't live in a time-series database. For example:
-
-Pulling IP geolocation lookups from a REST API to enrich flow dashboards
-Displaying device inventory from a CSV or CMDB API
-Showing BGP peer tables from a router's REST API
-Rendering SLA data from a ticketing system's API
-
+The Grafana Infinity plugin is a general-purpose data source that can query virtually any external data, including:</br>
+Source Type Examples: REST API, JSON/XML, HTTP, endpointCSV filesStatic exports, S3-hosted files, JSON files, Config exports, enrichment data, GraphQL, GraphQL API endpoints, Google Sheets, Spreadsheets</br>
+Why use Infinity?</br>
+Infinity fills the gap when your data doesn't live in a time-series database.
+</br></br>
 Infinity does not replace a proper time-series database for high-frequency metrics, but it is invaluable for contextual, reference, or supplemental data alongside Prometheus and ClickHouse panels.
 
 <h1> Building a Visualization with PromQL</h1>
-Example: Interface Utilization
-Goal: Display inbound and outbound bandwidth (in Mbps) for a specific network interface over time.
+Example: Interface Unicast traffic
+Goal: Display inbound and outbound bandwidth for a network over time.
 
 <h2> Step 1 — Create Dashboard Variables </h2>
 Variables turn hardcoded values into dropdown selectors at the top of your dashboard. Create them before building panels so they're available in your queries.</br>
@@ -140,13 +138,14 @@ Unit (under Standard options → Unit): Mbits/sec
 Add the promQL quieries 
 ![alt text](image-2.png)
 
-<h2> Step 4 — Apply and Save<h2>
+<h2> Step 4 — Apply and Save</h2>
 
-Click "Apply" (top right)
+Click "Apply" (top right)</br>
 Press Ctrl+S to save the dashboard
 
 
 <h1> Tips & Best Practices</h1>
+Always refer to the Grafana documentation @ https://grafana.com/docs/ </br>
 
 Use dashboard variables ($device, $interface) to make panels reusable across multiple devices without duplicating dashboards.</br>
 
