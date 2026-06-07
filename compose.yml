@@ -12,7 +12,7 @@ services:
     container_name: grafana
     restart: unless-stopped
     environment:
-      - GF_INSTALL_PLUGINS=vertamedia-clickhouse-datasource
+      - GF_INSTALL_PLUGINS=vertamedia-clickhouse-datasource, yesoreyeram-infinity-datasource
     ports:
       - "3000:3000/tcp"
     networks:
