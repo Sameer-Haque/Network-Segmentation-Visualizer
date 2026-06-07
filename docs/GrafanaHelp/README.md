@@ -105,28 +105,28 @@ Example: Interface Utilization
 Goal: Display inbound and outbound bandwidth (in Mbps) for a specific network interface over time.
 
 <h2> Step 1 — Create Dashboard Variables </h2>
-Variables turn hardcoded values into dropdown selectors at the top of your dashboard. Create them before building panels so they're available in your queries.\n
+Variables turn hardcoded values into dropdown selectors at the top of your dashboard. Create them before building panels so they're available in your queries.</br>
 Go to your dashboard, then: Dashboard Settings (gear icon, top right) → Variables → "+ Add variable"
-\n
+</br>
 <h3> Job Variable </h3>
 The job label in Prometheus identifies which scrape job collected the data. For SNMP Exporter this is typically snmp or a more specific name like snmp_routers.
 
 ![alt text](image.png)
 
-This query asks Prometheus: "What are all the distinct values of the job label on the ifHCInOctets metric?" — giving you a dropdown of every SNMP scrape job present in your data.\n
+This query asks Prometheus: "What are all the distinct values of the job label on the ifHCInOctets metric?" — giving you a dropdown of every SNMP scrape job present in your data.</br>
 
 <h3> Instance Variable </h3>
 The instance label identifies the specific device being polled (its IP or hostname). This variable depends on $job — it only shows devices belonging to the selected job.
 
 ![alt text](image-1.png)
-\n
-The {job="$job"} filter means this dropdown automatically narrows to only the devices in whichever job is selected above. This is called a chained variable.\n
+</br>
+The {job="$job"} filter means this dropdown automatically narrows to only the devices in whichever job is selected above. This is called a chained variable.</br>
 
 Click "Update", then "Save dashboard".
 
 <h2> Step 2 — Add a New Visualization <h2>
 
-On your dashboard, click "+ Add" → "Add visualization"\n
+On your dashboard, click "+ Add" → "Add visualization"</br>
 Select Prometheus as your data source
 
 
@@ -148,10 +148,10 @@ Press Ctrl+S to save the dashboard
 
 <h1> Tips & Best Practices</h1>
 
-Use dashboard variables ($device, $interface) to make panels reusable across multiple devices without duplicating dashboards.\n
+Use dashboard variables ($device, $interface) to make panels reusable across multiple devices without duplicating dashboards.</br>
 
-Template your label selectors in PromQL with variables: instance="$device" becomes a dropdown at the top of the dashboard.\n
+Template your label selectors in PromQL with variables: instance="$device" becomes a dropdown at the top of the dashboard.</br>
 
-Use Grafana Alerting on Prometheus-backed panels for threshold-based notifications (interface down, high utilization, etc.).\n
+Use Grafana Alerting on Prometheus-backed panels for threshold-based notifications (interface down, high utilization, etc.).</br>
 
-Export dashboards to JSON and store them in Git for version control and reproducibility.\n
+Export dashboards to JSON and store them in Git for version control and reproducibility.</br>
