@@ -8,11 +8,6 @@ ClickHouse — IPFIX / Flow Data</br>
 Prometheus — SNMP / Metrics</br>
 Infinity — Files & APIs</br>
 
-
-Building a Visualization with PromQL
-
-Creating a New Dashboard
-
 Log in to your Grafana instance.
 In the left sidebar, click the dashboards option
 Select "New Dashboard".
@@ -92,10 +87,10 @@ This gives you long-term storage, alerting, and PromQL is a powerful query langu
 
 <h2>Infinity — Files & APIs</h2>
 The Grafana Infinity plugin is a general-purpose data source that can query virtually any external data, including:</br>
-Source Type Examples: REST API, JSON/XML, HTTP, endpointCSV filesStatic exports, S3-hosted files, JSON files, Config exports, enrichment data, GraphQL, GraphQL API endpoints, Google Sheets, Spreadsheets</br>
+Source Type Examples: REST API, JSON/XML, HTTP endpoint, CSV files, static exports, S3-hosted files, JSON files, Config exports, enrichment data, GraphQL, GraphQL API endpoints, Google Sheets, Spreadsheets</br>
 Why use Infinity?</br>
 Infinity fills the gap when your data doesn't live in a time-series database.
-</br></br>
+</br>
 Infinity does not replace a proper time-series database for high-frequency metrics, but it is invaluable for contextual, reference, or supplemental data alongside Prometheus and ClickHouse panels.
 
 <h1> Building a Visualization with PromQL</h1>
@@ -122,13 +117,13 @@ The {job="$job"} filter means this dropdown automatically narrows to only the de
 
 Click "Update", then "Save dashboard".
 
-<h2> Step 2 — Add a New Visualization <h2>
+<h2> Step 2 — Add a New Visualization </h2>
 
 On your dashboard, click "+ Add" → "Add visualization"</br>
 Select Prometheus as your data source
 
 
-<h2> Step 3 — Configure the Panel <h2>
+<h2> Step 3 — Configure the Panel </h2>
 In the right-hand panel editor:
 
 Visualization type: Time series
