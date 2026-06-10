@@ -52,11 +52,10 @@ SYSOID_VENDOR_MAP = {
     ".1.3.6.1.4.1.11863.": "tplink",
 }
 
-# This could definitely use some work
 # TODO: Detect actual subnet mask instead of hardcoding /24 as a guess
 def get_local_network():
     s = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
-    s.connect(("8.8.8.8", 80))
+    s.connect(("192.0.2.1", 1))
     ip = s.getsockname()[0]
     s.close()
     return str(ipaddress.IPv4Network(f"{ip}/24", strict=False))
