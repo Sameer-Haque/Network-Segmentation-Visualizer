@@ -52,13 +52,18 @@ SYSOID_VENDOR_MAP = {
     ".1.3.6.1.4.1.11863.": "tplink",
 }
 
-# TODO: Detect actual subnet mask instead of hardcoding /24 as a guess
+# This gets the default IPv4 address and guesses a /24 network based on that
+# If users want something else they can use --network
 def get_local_network():
+    print("Warning: No network provided, guessing based on default IPv4 address")
     s = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
     s.connect(("192.0.2.1", 1))
     ip = s.getsockname()[0]
     s.close()
-    return str(ipaddress.IPv4Network(f"{ip}/24", strict=False))
+    prefix = "/24"
+    network = str(ipaddress.IPv4Network(f"{ip}{prefix}", strict=False))
+    print(f"Guessed {network}")
+    return network
 
 # System vendors are identified via the presence of certain OIDs
 # and by keywords in SNMPv2-MIB sysDescr
@@ -79,9 +84,14 @@ def detect_vendor(sys_oid, sys_descr, nmap_hints):
 # nmap scan and snimpy data gathering
 def scan(network, community, version):
     nm = nmap.PortScanner()
-    nm.scan(hosts=network, arguments="-sU -p161 --open -T4 -O --host-timeout 30s")
+    try:
+        nm.scan(hosts=network, arguments="-sU -p161 --open -T4 -O --host-timeout 30s")
+    except Exception as e:
+        print("nmap scan failed, remember to run this script as root")
+        print(f"nmap error message: {e}")
+        exit(1)
 
-    print(nm.all_hosts())
+    print(f"SNMP hosts: {nm.all_hosts()}")
 
     hosts = []
     load("SNMPv2-MIB")
@@ -110,10 +120,7 @@ def scan(network, community, version):
 
 # Build Prometheus config for PyYAML dump
 # TODO: Add support for alerting rules
-def build_prometheus_config(hosts, community, version):
-	# This is a temporary kludge and should be more flexible
-    auth_name = f"public_v{version}"
-
+def build_prometheus_config(hosts, auth):
     static_jobs = [
         {"job_name": "prometheus",    "static_configs": [{"targets": ["prometheus:9090"]}]},
         {"job_name": "grafana",       "static_configs": [{"targets": ["grafana:3000"]}]},
@@ -128,7 +135,7 @@ def build_prometheus_config(hosts, community, version):
             "job_name": f"snmp_{h['label']}_{h['ip'].replace('.', '_')}",
             "static_configs": [{"targets": [h["ip"]], "labels": {"vendor": h["label"], "hostname": h["hostname"]}}],
             "metrics_path": "/snmp",
-            "params": {"auth": [auth_name], "module": modules},
+            "params": {"auth": [auth], "module": modules},
             "relabel_configs": [
                 {"source_labels": ["__address__"],    "target_label": "__param_target"},
                 {"source_labels": ["__param_target"], "target_label": "instance"},
@@ -145,27 +152,36 @@ def build_prometheus_config(hosts, community, version):
 
 
 def main():
-    parser = argparse.ArgumentParser()
-    # TODO: Add --help
-    # TODO: Add --auth for specifying which snmp-exporter auth to use
-    parser.add_argument("--network",   default=None)
-    parser.add_argument("--community", default="public")
-    parser.add_argument("--version",   type=int, default=2)
-    # This arg could be more flexible
-    parser.add_argument("--output",    default="./config")
+    parser = argparse.ArgumentParser(
+                      description='Generates Prometheus configuration for Network Segmentation Visualizer',
+                      epilog='For further details check the README')
+
+    parser.add_argument("--auth", default="public_v2", help="snmp-exporter auth module to use for Prometheus (default: public_v2)")
+    parser.add_argument("--network", default=None, help='Network to scan in CIDR notation')
+    parser.add_argument("--community", default="public", help='SNMP community to scan (default: public)')
+    parser.add_argument("--version", type=int, default=2, help='SNMP version to use for scan (default: 2)')
+    parser.add_argument("--output", default="./config/prometheus/prometheus.yml", help='Output file (default: ./config/prometheus/prometheus.yml)')
+
     args = parser.parse_args()
 
     network = args.network or get_local_network()
     hosts   = scan(network, args.community, args.version)
-    cfg     = build_prometheus_config(hosts, args.community, args.version)
+    cfg     = build_prometheus_config(hosts, args.auth)
+    
+    if len(hosts) == 0:
+        print("Warning: No SNMP hosts found")
 
-    # TODO: There should probably be exception catching around file I/O
-    out = os.path.join(args.output, "prometheus", "prometheus.yml")
-    os.makedirs(os.path.dirname(out), exist_ok=True)
-    with open(out, "w") as f:
-        yaml.dump(cfg, f, default_flow_style=False, sort_keys=False)
+    try:
+        out = os.path.join(args.output)
+        os.makedirs(os.path.dirname(out), exist_ok=True)
+        with open(out, "w") as f:
+            yaml.dump(cfg, f, default_flow_style=False, sort_keys=False)        
+        print(f"Wrote {out} ({len(hosts)} SNMP host(s))")
 
-    print(f"Wrote {out} ({len(hosts)} host(s))")
+    except Exception as e:
+        print("ERROR: File output failed")
+        print(e)
+        exit(1)
 
 
 if __name__ == "__main__":
