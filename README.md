@@ -101,6 +101,7 @@ All components are containerized and managed with Docker Compose.
 - Docker and Docker Compose (run as root or with `sudo`)
 - A network device configured to send NetFlow/IPFIX to the host running GoFlow2
 - SNMP enabled on target devices (community string required)
+- Python 3 with `python-nmap`, `snimpy`, and `PyYAML` for the configuration generator
 
 ### Setup
 
@@ -120,24 +121,54 @@ sudo docker compose up
 
 ## Configuration Generator
 
-The generator is a Python 3 script that scans the local network for SNMP-capable devices and produces a Prometheus configuration targeting those devices. Run it during initial setup, or rerun it whenever the network's SNMP configuration changes. On regeneration, old config files are backed up rather than overwritten.
+The generator is a Python 3 script (`generator/generator.py`) that scans the local network for SNMP-capable devices and produces a Prometheus scrape configuration targeting those devices. Run it during initial setup, or rerun it whenever the network's SNMP configuration changes.
 
-**Dependencies:** `python-nmap`, `PyYAML`
+**Dependencies:** `python-nmap`, `snimpy`, `PyYAML`
 
-**Basic flow:**
+### Usage
 
-1. Prompts for (or reads from arguments/config file) SNMP credentials and community strings.
-2. Uses `nmap` to scan for SNMP endpoints and identify device vendors where possible.
-3. Selects the appropriate vendor SNMP MIB configuration.
-4. Writes and installs the Prometheus configuration.
+```
+python3 ./generator/generator.py [--network NETWORK] [--community COMMUNITY]
+                                  [--version VERSION] [--output OUTPUT]
+
+options:
+  -h, --help            show this help message and exit
+  --network NETWORK     CIDR range to scan (default: auto-detected /24)
+  --community COMMUNITY SNMP community string (default: public)
+  --version VERSION     SNMP version, 1 or 2 (default: 2)
+  --output OUTPUT       directory to write config into (default: ./config)
+```
+
+### How it works
+
+1. Determines the local `/24` subnet (or uses the value from `--network`).
+2. Uses `nmap` to scan for hosts with UDP port 161 (SNMP) open.
+3. Queries each host via SNMP to read `sysObjectID`, `sysDescr`, and `sysName`.
+4. Detects device vendor using the sysObjectID OID prefix and/or keywords in `sysDescr`.
+5. Selects vendor-appropriate SNMP MIB modules for the scrape job.
+6. Writes a `prometheus.yml` to `<output>/prometheus/prometheus.yml`.
+
+### Vendor detection
+
+The generator currently recognises three vendors automatically:
+
+| Vendor | Detection method | Extra MIB modules |
+|---|---|---|
+| OpenWRT | sysObjectID prefix `.1.3.6.1.4.1.8072.` or keywords in sysDescr | `ip_mib`, `ucd_system_stats`, `ucd_memory` |
+| Cisco | sysObjectID prefix `.1.3.6.1.4.1.9.` or keywords (`cisco`, `ios`, `catalyst`, etc.) | `cisco_device` |
+| TP-Link | sysObjectID prefix `.1.3.6.1.4.1.11863.` or keywords (`tp-link`, `archer`, etc.) | `ip_mib` |
+
+Devices that cannot be matched to a known vendor are included in the config with base MIB modules only and are labelled `unknown`.
 
 > Config generation and node map generation are intentionally kept separate for modularity. The generator only handles Prometheus targets; node map state is managed independently.
+
+For detailed instructions on generating the `snmp-exporter` vendor config (`snmp.yml`) for OpenWRT or other vendors, see [`docs/snmp/README.md`](docs/snmp/README.md).
 
 ---
 
 ## SNMP MIBs
 
-The following standard MIBs are used for device and interface data collection. Vendor-specific MIBs (e.g. `CISCO-IF-EXTENSION-MIB`) are added on a per-vendor basis.
+The following standard MIBs are used for device and interface data collection. Vendor-specific MIBs are added on a per-vendor basis as described in the [Configuration Generator](#configuration-generator) section above.
 
 | MIB | Purpose |
 |---|---|
@@ -168,15 +199,17 @@ flowchart TD
     G --> H[Grafana Node Graph Dashboard]
 ```
 
+> **Note:** OpenWRT does not fully implement BRIDGE-MIB (`.1.3.6.1.2.1.17.4.3.1`) by default, which delays edge generation in the node map for OpenWRT-only environments. Development is continuing on a workaround for this; Cisco environments are unaffected as BRIDGE-MIB is fully supported there.
+
 ---
 
 ## Supported Vendors
 
 | Vendor | Status |
 |---|---|
-| OpenWRT |  Supported (PoC) |
-| Cisco |  In progress (Phase 2) |
-| TP-Link |  In progress (Phase 2) |
+| OpenWRT | ✅ Supported (PoC) |
+| Cisco | 🔄 In progress (Phase 2) |
+| TP-Link | 🔄 In progress (Phase 2) Note: Will very likely be swapped out in favor of D-Link |
 
 ---
 
@@ -184,7 +217,21 @@ flowchart TD
 
 See [`docs/vbox-test-setup/README.md`](docs/vbox-test-setup/README.md) for instructions on setting up a local test environment with Oracle VirtualBox using OpenWRT as the router and Debian VMs as clients.
 
+A GNS3-based testing environment for Cisco devices is in progress as part of Phase 2.
+
 ---
+
+## Changelog
+
+### June 2026 (Phase 2 — in progress)
+
+- **Configuration generator shipped** — `generator/generator.py` now performs a live `nmap` scan, queries each discovered host via SNMP, auto-detects vendor from sysObjectID and sysDescr, and writes a ready-to-use `prometheus.yml`. Supported vendors: OpenWRT, Cisco, TP-Link. ([`355a150`](../../commit/355a150), [`19aaeec`](../../commit/19aaeec))
+- **snmp-exporter vendor config documentation added** — `docs/snmp/README.md` provides a full walkthrough for generating `snmp.yml` for OpenWRT, including MIB extraction, generator compilation, config authoring, and debugging. An example `generator.yml` for OpenWRT is included. ([`7dc0898`](../../commit/7dc0898), [`769fb74`](../../commit/769fb74))
+- **Configuration generator README added** (`generator/README.md`) documenting CLI usage. ([`769fb74`](../../commit/769fb74))
+- **Generator network detection hardened** — `get_local_network()` now uses a safe dummy address (`192.0.2.1`) rather than a live routable destination to determine the local IP. ([`355a150`](../../commit/355a150))
+- **Cisco vendor support in progress** — GNS3 test environment (tahasiraj97), snmp-exporter config (ar-pbais-y4), and Cisco-specific Grafana dashboards (Sameer-Haque) are being developed in parallel. Node map testing on Cisco is also underway.
+- **Node map edge generation blocked on OpenWRT BRIDGE-MIB** — BRIDGE-MIB is not fully available on OpenWRT by default; a custom workaround for OID `.1.3.6.1.2.1.17.4.3.1` is in development. Cisco-first approach adopted while workaround is built.
+- **Node map CSV service added** — a dedicated Docker service now hosts the node map CSV files and exposes them to Grafana's Node Graph panel.
 
 <details>
 <summary><strong>Known Issues</strong></summary>
@@ -213,6 +260,10 @@ This happens after a restart because GoFlow2 needs to reacquire NetFlow v9 templ
 softflowctl send-template
 ```
 
+### Node map missing edges on OpenWRT
+
+BRIDGE-MIB is not fully implemented on OpenWRT by default, so switch MAC table data used for edge construction is unavailable. A workaround is in development. As a temporary measure, the node map will still show all SNMP-discovered devices as nodes; edges between devices that can be resolved via routing tables will still appear.
+
 </details>
 
 ---
@@ -227,3 +278,4 @@ softflowctl send-template
 [6] IPFIX Entities (IANA) — https://www.iana.org/assignments/ipfix/ipfix.xhtml  
 [7] PyYAML — https://pypi.org/project/PyYAML/  
 [8] python-nmap — https://pypi.org/project/python3-nmap/  
+[9] snimpy — https://pypi.org/project/snimpy/
