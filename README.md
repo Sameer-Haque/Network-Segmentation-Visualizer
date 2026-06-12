@@ -128,15 +128,22 @@ The generator is a Python 3 script (`generator/generator.py`) that scans the loc
 ### Usage
 
 ```
-python3 ./generator/generator.py [--network NETWORK] [--community COMMUNITY]
-                                  [--version VERSION] [--output OUTPUT]
+python3 generator/generator.py --help
+usage: generator.py [-h] [--auth AUTH] [--network NETWORK] [--community COMMUNITY]
+                    [--version VERSION] [--output OUTPUT]
+
+Generates Prometheus configuration for Network Segmentation Visualizer
 
 options:
   -h, --help            show this help message and exit
-  --network NETWORK     CIDR range to scan (default: auto-detected /24)
-  --community COMMUNITY SNMP community string (default: public)
-  --version VERSION     SNMP version, 1 or 2 (default: 2)
-  --output OUTPUT       directory to write config into (default: ./config)
+  --auth AUTH           snmp-exporter auth module to use for Prometheus (default: public_v2)
+  --network NETWORK     Network to scan in CIDR notation
+  --community COMMUNITY
+                        SNMP community to scan (default: public)
+  --version VERSION     SNMP version to use for scan (default: 2)
+  --output OUTPUT       Output file (default: ./config/prometheus/prometheus.yml)
+
+For further details check the README
 ```
 
 ### How it works
