@@ -36,9 +36,28 @@ modules:
         ignore: true # Lookup metric
       ifType:
         type: EnumAsInfo
-  # Default IP-MIB with ipv4InterfaceTable for example.
+  # IP-MIB with ipAddressTable.
   ip_mib:
-    walk: [ipv4InterfaceTable]
+    walk:
+      - "IP-MIB::ipAddressTable"
+      - "IP-MIB::ipNetToPhysicalTable"
+    lookups:
+      - source_indexes: [ipAddressAddr]
+        lookup: "IP-MIB::ipAddressAddrType"
+    overrides:
+      ipAddressAddrType:
+        ignore: true # Lookup metric
+  # IP-FORWARD-MIB with ipCidrRouteTable.
+  ip_forward_mib:
+    walk:
+      - "IP-FORWARD-MIB::ipCidrRouteTable"
+    lookups:
+      - source_indexes: [ipCidrRouteDest]
+        lookup: "IP-FORWARD-MIB::ipCidrRouteType"
+    overrides:
+      ipCidrRouteType:
+        ignore: true # Lookup metric
+
 
 # UCD-SNMP-MIB
 #
