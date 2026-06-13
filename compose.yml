@@ -74,7 +74,7 @@ services:
     networks:
       - back-end
     volumes:
-      - ./config/snmp-exporter/snmp.yml:/etc/snmp-exporter
+      - ./config/snmp-exporter/snmp.yml:/etc/snmp_exporter/snmp.yml:ro
     command:
       - '--config.file=/etc/snmp_exporter/snmp.yml'
 
