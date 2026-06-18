@@ -37,7 +37,22 @@ clickhouse client -n <<-EOSQL
         dst_port UInt32,
 
         bytes UInt64,
-        packets UInt64
+        packets UInt64,
+        
+        ip_tos UInt32,
+        forwarding_status UInt32,
+        ip_ttl UInt32,
+        ip_flags UInt32,
+        
+        tcp_flags UInt32,
+        
+        icmp_type UInt32,
+        icmp_code UInt32,
+        
+        ipv6_flow_label UInt32,
+        
+        fragment_id UInt32,
+        fragment_offset UInt32
     ) ENGINE = Kafka()
     SETTINGS
         kafka_broker_list = 'kafka:9092',
@@ -71,7 +86,22 @@ clickhouse client -n <<-EOSQL
         dst_port UInt32,
 
         bytes UInt64,
-        packets UInt64
+        packets UInt64,
+        
+        ip_tos UInt32,
+        forwarding_status UInt32,
+        ip_ttl UInt32,
+        ip_flags UInt32,
+        
+        tcp_flags UInt32,
+        
+        icmp_type UInt32,
+        icmp_code UInt32,
+        
+        ipv6_flow_label UInt32,
+        
+        fragment_id UInt32,
+        fragment_offset UInt32
     ) ENGINE = MergeTree()
     PARTITION BY date
     ORDER BY time_received_ns;
@@ -99,7 +129,23 @@ clickhouse client -n <<-EOSQL
         dst_port,
 
         bytes,
-        packets
+        packets,
+        
+        ip_tos,
+        forwarding_status,
+        ip_ttl,
+        ip_flags,
+        
+        tcp_flags,
+        
+        icmp_type,
+        icmp_code,
+        
+        ipv6_flow_label,
+        
+        fragment_id,
+        fragment_offset
+        
        FROM flows;
 
     CREATE TABLE IF NOT EXISTS flows_5m
@@ -119,7 +165,22 @@ clickhouse client -n <<-EOSQL
 
         bytes UInt64,
         packets UInt64,
-        count UInt64
+        count UInt64,
+        
+        ip_tos UInt32,
+        forwarding_status UInt32,
+        ip_ttl UInt32,
+        ip_flags UInt32,
+        
+        tcp_flags UInt32,
+        
+        icmp_type UInt32,
+        icmp_code UInt32,
+        
+        ipv6_flow_label UInt32,
+        
+        fragment_id UInt32,
+        fragment_offset UInt32
     ) ENGINE = SummingMergeTree()
     PARTITION BY date
     ORDER BY (date, timeslot, src_as, dst_as, \`etypeMap.etype\`);
@@ -139,7 +200,22 @@ clickhouse client -n <<-EOSQL
 
             sum(bytes) AS bytes,
             sum(packets) AS packets,
-            count() AS count
+            count() AS count,
+            
+            ip_tos UInt32,
+            forwarding_status UInt32,
+            ip_ttl UInt32,
+            ip_flags UInt32,
+        
+            tcp_flags UInt32,
+        
+            icmp_type UInt32,
+            icmp_code UInt32,
+        
+            ipv6_flow_label UInt32,
+        
+            fragment_id UInt32,
+            fragment_offset UInt32
 
         FROM flows_raw
         GROUP BY date, timeslot, src_as, dst_as, \`etypeMap.etype\`;
