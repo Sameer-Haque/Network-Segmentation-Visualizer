@@ -40,7 +40,10 @@ modules:
     walk:
       - "IP-MIB::ipAddrTable"
       - "IP-MIB::ipNetToMediaTable"   # ARP table — needed for node map edge building
-      - "IP-MIB::ipForward"           # IP forwarding/routing table
+
+  ip_forward_mib:
+    walk:
+      - "IP-FORWARD-MIB::ipCidrRouteTable"
 
   hrSystem:
     walk:
