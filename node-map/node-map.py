@@ -158,5 +158,5 @@ while True:
     #trace route mapping
     edges = get_edge_info(nodes)
     #Node and Edges CSV
-    conversion_gafana(nodes,edge)
+    conversion_gafana(nodes,edges)
     time.sleep(300)
