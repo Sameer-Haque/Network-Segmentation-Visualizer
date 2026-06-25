@@ -18,6 +18,11 @@ RUN python3 -m venv /opt/venv \
         easysnmp \
         clickhouse-connect 
 
+RUN mkdir -p /node-map/NodeGraphCSV/Current
+RUN mkdir -p /node-map/NodeGraphCSV/Backups
+
 ENV PATH="/opt/venv/bin:$PATH"
 
-CMD ["sleep", "infinity"]
+EXPOSE 6999
+
+CMD ["python3", "-m", "http.server", "6999", "--bind", "0.0.0.0", "--directory", "/node-map/NodeGraphCSV/Current/"]

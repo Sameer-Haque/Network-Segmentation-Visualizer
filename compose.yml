@@ -7,6 +7,7 @@ services:
         dockerfile: dockerfile
     container_name: node-map
     volumes: [./node-map:/nodemap]
+    ports: ["6999:6999"]
   grafana:
     image: grafana/grafana:latest
     container_name: grafana
@@ -173,16 +174,6 @@ services:
     networks:
       - back-end
 
-  csv-server:
-    image: python:3.11-slim
-    container_name: csv-server
-    restart: unless-stopped
-    networks:
-      - back-end
-    volumes:
-      - ./Dashboards/NodeGraphCSV:/app
-    working_dir: /app
-    command: python3 -m http.server 6999  --bind 0.0.0.0
 
 networks:
   back-end: {}

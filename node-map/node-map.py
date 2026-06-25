@@ -44,6 +44,9 @@ def traceroute(ip):
             ])
     return data
 
+def file_path(output_dir, filename):
+    return output_dir / filename
+
 def get_node_info(arptable, router_data):
     data = []
     excludeip = set()
@@ -74,7 +77,7 @@ def get_node_info(arptable, router_data):
         del row[0]
     return data
     
-def conversion_gafana(arptable):
+def conversion_gafana(arptable,edges):
     data = []
     for index, info in enumerate(arptable):
         for device in snmp_devices:
@@ -87,14 +90,29 @@ def conversion_gafana(arptable):
                 icon = "sitemap"
                 break
         data.append([index, devicename, info[0], info[1], "", color, icon])
-    filename = datetime.now().strftime("node_data_%Y-%m-%d_%H-%M-%S.csv")
-    output_dir = Path("/home/user")
-    file_path = output_dir / filename
-    with open(file_path, "w", newline="") as file:
+    filename_node_backup = datetime.now().strftime("node_data_%Y-%m-%d_%H-%M-%S.csv")
+    filename_nodes = "nodes.csv"
+    filename_edge_backup = datetime.now().strftime("edge_data_%Y-%m-%d_%H-%M-%S.csv")
+    filename_edge = "edges.csv"
+    output_dir_backup = Path("/node-map/NodeGraphCSV/Backup/")
+    output_dir_Current = Path("/node-map/NodeGraphCSV/Current/")
+
+    with open(file_path(output_dir_Current,filename_nodes), "w", newline="") as file:
         writer = csv.writer(file)
         writer.writerow(["id","title","subtitle","mainstat","secondarystat","color","icon"])
         writer.writerows(data)
-    return str(file_path)
+    with open(file_path(output_dir_backup,filename_node_backup), "w", newline="") as file:
+        writer = csv.writer(file)
+        writer.writerow(["id","title","subtitle","mainstat","secondarystat","color","icon"])
+        writer.writerows(data)
+    with open(file_path(output_dir_Current,filename_edge), "w", newline="") as file:
+        writer = csv.writer(file)
+        writer.writerow(["id","title","subtitle","mainstat","secondarystat","color","icon"])
+        writer.writerows(data)
+    with open(file_path(output_dir_Current,filename_edge_backup), "w", newline="") as file:
+        writer = csv.writer(file)
+        writer.writerow(["id","title","subtitle","mainstat","secondarystat","color","icon"])
+        writer.writerows(data)
 
 def get_edge_info(arptable):
     data = []
@@ -140,5 +158,5 @@ while True:
     #trace route mapping
     edges = get_edge_info(nodes)
     #Node CSV
-    conversion_gafana(nodes)
+    conversion_gafana(nodes,edge)
     time.sleep(300)
