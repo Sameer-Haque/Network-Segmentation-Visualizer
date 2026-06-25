@@ -79,6 +79,7 @@ def get_node_info(arptable, router_data):
     
 def conversion_gafana(arptable,edges):
     data = []
+    data1 = []
     for index, info in enumerate(arptable):
         for device in snmp_devices:
             devicename = "End Device"
@@ -89,7 +90,20 @@ def conversion_gafana(arptable,edges):
                 color = "green"
                 icon = "sitemap"
                 break
-        data.append([index, devicename, info[0], info[1], "", color, icon])
+        data.append([index, devicename, info[1], info[0], "", color, icon])
+
+    for index, info in enumerate(edges):
+        node1 = ""
+        node2 = ""
+        for node in data:
+            if node[2] == info[0]:
+                node1 = node[0]
+            if node[2] == info[1]:
+                node2 = node[0]
+            if node1 != "" and node2 != "":
+                break
+        data1.append([index, node1, node2,"","", 1 , "", "black"])
+
     filename_node_backup = datetime.now().strftime("node_data_%Y-%m-%d_%H-%M-%S.csv")
     filename_nodes = "nodes.csv"
     filename_edge_backup = datetime.now().strftime("edge_data_%Y-%m-%d_%H-%M-%S.csv")
@@ -107,12 +121,12 @@ def conversion_gafana(arptable,edges):
         writer.writerows(data)
     with open(file_path(output_dir_Current,filename_edge), "w", newline="") as file:
         writer = csv.writer(file)
-        writer.writerow(["id","title","subtitle","mainstat","secondarystat","color","icon"])
-        writer.writerows(data)
+        writer.writerow(["id","source","target","mainstat","secondarystat","thickness","highlighted", "color"])
+        writer.writerows(data1)
     with open(file_path(output_dir_backup,filename_edge_backup), "w", newline="") as file:
         writer = csv.writer(file)
-        writer.writerow(["id","title","subtitle","mainstat","secondarystat","color","icon"])
-        writer.writerows(data)
+        writer.writerow(["id","source","target","mainstat","secondarystat","thickness","highlighted", "color"])
+        writer.writerows(data1)
 
 def get_edge_info(arptable):
     data = []
