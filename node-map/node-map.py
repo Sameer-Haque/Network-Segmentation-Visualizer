@@ -94,7 +94,7 @@ def conversion_gafana(arptable,edges):
     filename_nodes = "nodes.csv"
     filename_edge_backup = datetime.now().strftime("edge_data_%Y-%m-%d_%H-%M-%S.csv")
     filename_edge = "edges.csv"
-    output_dir_backup = Path("/node-map/NodeGraphCSV/Backup/")
+    output_dir_backup = Path("/node-map/NodeGraphCSV/Backups/")
     output_dir_Current = Path("/node-map/NodeGraphCSV/Current/")
 
     with open(file_path(output_dir_Current,filename_nodes), "w", newline="") as file:
@@ -109,7 +109,7 @@ def conversion_gafana(arptable,edges):
         writer = csv.writer(file)
         writer.writerow(["id","title","subtitle","mainstat","secondarystat","color","icon"])
         writer.writerows(data)
-    with open(file_path(output_dir_Current,filename_edge_backup), "w", newline="") as file:
+    with open(file_path(output_dir_backup,filename_edge_backup), "w", newline="") as file:
         writer = csv.writer(file)
         writer.writerow(["id","title","subtitle","mainstat","secondarystat","color","icon"])
         writer.writerows(data)
