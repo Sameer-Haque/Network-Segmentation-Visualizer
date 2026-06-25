@@ -25,3 +25,10 @@ datasources:
    secureJsonFields: {}
    version: 3
    readOnly: false
+ - name: Infinity
+   type: yesoreyeram-infinity-datasource
+   access: proxy
+   orgId: 1
+   version: 1
+   editable: true
+   isDefault: false
