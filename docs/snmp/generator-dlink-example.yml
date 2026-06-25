@@ -1,0 +1,132 @@
+auths:
+  public_v1:
+    version: 1
+  public_v2:
+    version: 2
+    
+modules:
+
+  ##Standard MIBs (same as OpenWRT config, included for base compatibility)##
+
+  system:
+    walk:
+      - "SNMPv2-MIB::system"
+    lookups:
+      - source_indexes: [sysORIndex]
+        lookup: "SNMPv2-MIB::sysORDescr"
+
+  if_mib:
+    walk:
+      - "IF-MIB::interfaces"
+      - "IF-MIB::ifXTable"
+    lookups:
+      - source_indexes: [ifIndex]
+        lookup: "IF-MIB::ifAlias"
+      - source_indexes: [ifIndex]
+        lookup: "IF-MIB::ifDescr"
+      - source_indexes: [ifIndex]
+        lookup: "IF-MIB::ifName"
+    overrides:
+      ifAlias:
+        ignore: true
+      ifDescr:
+        ignore: true
+      ifName:
+        ignore: true
+      ifType:
+        type: EnumAsInfo
+
+  ip_mib:
+    walk:
+      - "IP-MIB::ipAddrTable"
+      - "IP-MIB::ipNetToMediaTable"
+    lookups:
+      - source_indexes: [ipAddressAddr]
+        lookup: "IP-MIB::ipAddressAddrType"
+    overrides:
+      ipAddressAddrType:
+        ignore: true # Lookup metric
+
+  ip_forward_mib:
+    walk:
+      - "IP-FORWARD-MIB::ipCidrRouteTable"
+    lookups:
+      - source_indexes: [ipCidrRouteDest]
+        lookup: "IP-FORWARD-MIB::ipCidrRouteType"
+    overrides:
+      ipCidrRouteType:
+        ignore: true # Lookup metric
+
+  hrSystem:
+    walk:
+      - "HOST-RESOURCES-MIB::hrSystem"
+
+  hrStorage:
+    walk:
+      - "HOST-RESOURCES-MIB::hrStorage"
+    lookups:
+      - source_indexes: [hrStorageIndex]
+        lookup: "HOST-RESOURCES-MIB::hrStorageDescr"
+      - source_indexes: [hrStorageIndex]
+        lookup: "HOST-RESOURCES-MIB::hrStorageType"
+    overrides:
+      hrStorageIndex:
+        ignore: true
+      hrStorageType:
+        ignore: true
+      hrStorageDescr:
+        ignore: true
+
+  hrDevice:
+    walk:
+      - "HOST-RESOURCES-MIB::hrDevice"
+    lookups:
+      - source_indexes: [hrDeviceIndex]
+        lookup: "HOST-RESOURCES-MIB::hrDeviceDescr"
+      - source_indexes: [hrDeviceIndex]
+        lookup: "HOST-RESOURCES-MIB::hrDeviceType"
+    overrides:
+      hrDeviceIndex:
+        ignore: true
+      hrDeviceType:
+        ignore: true
+      hrDeviceDescr:
+        ignore: true
+
+## DLINK BRIDGE-MIB modules ##
+
+  bridge_mib:
+    walk:
+      - "BRIDGE-MIB::dot1dBridge"     # Base bridge info
+      - "BRIDGE-MIB::dot1dTp"         # Transparent bridging / MAC table
+      - "BRIDGE-MIB::dot1dStp"        # Spanning tree state
+    lookups:
+      - source_indexes: [dot1dTpFdbAddress]
+        lookup: "BRIDGE-MIB::dot1dTpFdbPort"
+      - source_indexes: [dot1dTpFdbAddress]
+        lookup: "BRIDGE-MIB::dot1dTpFdbStatus"
+    overrides:
+      dot1dTpFdbStatus:
+        type: EnumAsStateSet
+        
+  q_bridge_mib:
+    walk:
+      - "Q-BRIDGE-MIB::dot1qBase"
+      - "Q-BRIDGE-MIB::dot1qTp"
+      - "Q-BRIDGE-MIB::dot1qStatic"
+      - "Q-BRIDGE-MIB::dot1qVlan"
+    lookups:
+      - source_indexes: [dot1qTpFdbAddress]
+        lookup: "Q-BRIDGE-MIB::dot1qTpFdbPort"
+      - source_indexes: [dot1qTpFdbAddress]
+        lookup: "Q-BRIDGE-MIB::dot1qTpFdbStatus"
+    overrides:
+      dot1qTpFdbStatus:
+        type: EnumAsStateSet
+
+  p_bridge_mib:
+    walk:
+      - "P-BRIDGE-MIB::dot1dExtBase"
+      - "P-BRIDGE-MIB::dot1dPriority"
+      - "P-BRIDGE-MIB::dot1dGarp"
+      - "P-BRIDGE-MIB::dot1dGmrp"
