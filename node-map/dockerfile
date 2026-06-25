@@ -21,8 +21,10 @@ RUN python3 -m venv /opt/venv \
 RUN mkdir -p /node-map/NodeGraphCSV/Current
 RUN mkdir -p /node-map/NodeGraphCSV/Backups
 
+COPY node-map.py /node-map/node-map.py
+
 ENV PATH="/opt/venv/bin:$PATH"
 
 EXPOSE 6999
 
-CMD ["python3", "-m", "http.server", "6999", "--bind", "0.0.0.0", "--directory", "/node-map/NodeGraphCSV/Current/"]
+CMD ["sh", "-c", "python3 /node-map/node-map.py & exec python3 -m http.server 6999 --bind 0.0.0.0 --directory /node-map/NodeGraphCSV/Current"]
