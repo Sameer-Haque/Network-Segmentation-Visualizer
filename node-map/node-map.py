@@ -77,7 +77,7 @@ def get_node_info(arptable, router_data):
         del row[0]
     return data
     
-def conversion_gafana(arptable,edges):
+def conversion_gafana(arptable,edges,routerips):
     data = []
     data1 = []
     for index, info in enumerate(arptable):
@@ -102,6 +102,17 @@ def conversion_gafana(arptable,edges):
                 node2 = node[0]
             if node1 != "" and node2 != "":
                 break
+        if node1 == "" or node2 == "":
+            for router in routerips:
+                for routerip in router[1]:
+                    if routerip.value == info[0]:
+                        for node in data:
+                            if node[2] == router[0]:
+                                node1 = node[0]
+                    if routerip.value == info[1]:
+                        for node in data:
+                            if node[2] == router[0]:
+                                node2 = node[0]
         data1.append([index, node1, node2,"","", 1 , "", "black"])
 
     filename_node_backup = datetime.now().strftime("node_data_%Y-%m-%d_%H-%M-%S.csv")
@@ -172,5 +183,5 @@ while True:
     #trace route mapping
     edges = get_edge_info(nodes)
     #Node and Edges CSV
-    conversion_gafana(nodes,edges)
+    conversion_gafana(nodes,edges,routerips)
     time.sleep(300)
