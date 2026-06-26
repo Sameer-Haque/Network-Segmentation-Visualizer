@@ -6,8 +6,8 @@ services:
         context: ./node-map
         dockerfile: dockerfile
     container_name: node-map
+    network_mode: host
     volumes: [./node-map:/nodemap]
-    ports: ["6999:6999"]
   grafana:
     image: grafana/grafana:latest
     container_name: grafana

@@ -152,7 +152,6 @@ def get_edge_info(arptable):
         results = traceroute(ip[1])
         count = len(results)
         if count == 0:
-
             continue
         if count == 1:
             data.append([closest_router, ip[1]])
