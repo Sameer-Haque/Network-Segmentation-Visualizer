@@ -152,11 +152,15 @@ def get_edge_info(arptable):
         results = traceroute(ip[1])
         count = len(results)
         if count == 0:
+
             continue
         if count == 1:
             data.append([closest_router, ip[1]])
         else:
            data.append([results[count-2][1], results[count-1][1]]) 
+    if closest_router == "":
+        with open("no_closest_router.txt", "w") as file:
+            file.write("no closest router")
     return data
 
 #Main Loop
