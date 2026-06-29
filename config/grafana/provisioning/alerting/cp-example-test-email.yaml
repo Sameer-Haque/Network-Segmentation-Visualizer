@@ -1,0 +1,11 @@
+apiVersion: 1
+contactPoints:
+    - orgId: 1
+      name: example-test-email
+      receivers:
+        - uid: efqikj73b51xcc
+          type: email
+          settings:
+            addresses: example@localhost.lan
+            singleEmail: false
+          disableResolveMessage: false

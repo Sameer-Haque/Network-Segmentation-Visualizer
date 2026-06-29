@@ -1,0 +1,106 @@
+apiVersion: 1
+groups:
+    - orgId: 1
+      name: NetFlow Alerts
+      folder: NetFlow Alerts
+      interval: 5m
+      rules:
+        - uid: ffqiocsmhqtc0a
+          title: Telnet test alert
+          condition: C
+          data:
+            - refId: A
+              relativeTimeRange:
+                from: 300
+                to: 0
+              datasourceUid: __expr__
+              model:
+                adHocFilters: []
+                adHocValuesQuery: ""
+                add_metadata: true
+                contextWindowSize: "10"
+                database: default
+                dateColDataType: date
+                dateTimeColDataType: time_flow_start_ns
+                dateTimeType: DATETIME64
+                editorMode: sql
+                extrapolate: true
+                format: table
+                formattedQuery: SELECT $timeSeries as t, count() FROM $table WHERE $timeFilter GROUP BY t ORDER BY t
+                interval: ""
+                intervalFactor: 1
+                intervalMs: 1000
+                maxDataPoints: 43200
+                nullifySparse: false
+                query: |-
+                    SELECT
+                        time_flow_start_ns AS time,
+                        sum(bytes*sampling_rate) AS sumbytes
+                    FROM $table
+                    WHERE $timeFilter AND toString(src_port) = '23'
+                    GROUP BY time
+                    ORDER BY sumbytes DESC
+                refId: A
+                round: 0s
+                skip_comments: true
+                table: flows_raw
+                useWindowFuncForMacros: true
+            - refId: B
+              datasourceUid: __expr__
+              model:
+                conditions:
+                    - evaluator:
+                        params: []
+                        type: gt
+                      operator:
+                        type: and
+                      query:
+                        params:
+                            - B
+                      reducer:
+                        params: []
+                        type: last
+                      type: query
+                datasource:
+                    type: __expr__
+                    uid: __expr__
+                expression: A
+                intervalMs: 1000
+                maxDataPoints: 43200
+                reducer: last
+                refId: B
+                type: reduce
+            - refId: C
+              datasourceUid: __expr__
+              model:
+                conditions:
+                    - evaluator:
+                        params:
+                            - 0
+                        type: gt
+                      operator:
+                        type: and
+                      query:
+                        params:
+                            - C
+                      reducer:
+                        params: []
+                        type: last
+                      type: query
+                datasource:
+                    type: __expr__
+                    uid: __expr__
+                expression: B
+                intervalMs: 1000
+                maxDataPoints: 43200
+                refId: C
+                type: threshold
+          noDataState: OK
+          execErrState: Error
+          for: 5m
+          annotations:
+            description: This alert is triggered if traffic is detected on TCP or UDP port 23 in Netflow.
+            summary: Traffic on the port reserved for Telnet was detected.
+          isPaused: false
+          notification_settings:
+            receiver: example-test-email
