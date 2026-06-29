@@ -21,6 +21,7 @@ services:
     volumes:
       - ./config/grafana/provisioning:/etc/grafana/provisioning
       - ./config/grafana/lib:/var/lib/grafana
+      - ./config/grafana/grafana.ini:/etc/grafana/grafana.ini
 
 # This section commented out for now
 # May be used for future features
