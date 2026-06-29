@@ -1,0 +1,5 @@
+id,title,subtitle,mainstat,secondarystat,color,icon
+node-1,Primary Database,PostgreSQL VM,84% CPU,1.2TB Used,#ef4444,database
+node-2,Auth Microservice,Docker Container,12ms Latency,99.9% Uptime,#22c55e,lock
+node-3,API Gateway,Nginx Edge,2.4k req/s,0.01% Error Rate,#3b82f6,route
+node-4,Redis Cache,In-Memory Cluster,92% Hit Rate,256MB Ram,#eab308,zap

@@ -1,0 +1,31 @@
+FROM debian:13-slim
+
+WORKDIR /node-map
+
+RUN apt-get update && apt-get install -y \
+    python3 \
+    python3-pip \
+    python3-venv \
+    python3-dev \
+    traceroute \
+    libsnmp-dev \
+    snmp \
+    gcc \
+    && rm -rf /var/lib/apt/lists/*
+
+RUN python3 -m venv /opt/venv \
+    && /opt/venv/bin/pip install --upgrade pip \
+    && /opt/venv/bin/pip install \
+        easysnmp \
+        clickhouse-connect 
+
+RUN mkdir -p /node-map/NodeGraphCSV/Current
+RUN mkdir -p /node-map/NodeGraphCSV/Backups
+
+COPY node-map.py /node-map/node-map.py
+
+ENV PATH="/opt/venv/bin:$PATH"
+
+EXPOSE 6999
+
+CMD ["sh", "-c", "python3 /node-map/node-map.py & exec python3 -m http.server 6999 --bind 0.0.0.0 --directory /node-map/NodeGraphCSV/Current"]

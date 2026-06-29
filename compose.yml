@@ -1,12 +1,19 @@
 name: network-visualizer
 
 services:
+  node-map:
+    build: 
+        context: ./node-map
+        dockerfile: dockerfile
+    container_name: node-map
+    network_mode: host
+    volumes: [./node-map:/nodemap]
   grafana:
     image: grafana/grafana:latest
     container_name: grafana
     restart: unless-stopped
     environment:
-      - GF_INSTALL_PLUGINS=vertamedia-clickhouse-datasource
+      - GF_INSTALL_PLUGINS=vertamedia-clickhouse-datasource, yesoreyeram-infinity-datasource
     ports:
       - "3000:3000/tcp"
     networks:
@@ -166,6 +173,7 @@ services:
       - "9092:9092/tcp"
     networks:
       - back-end
+
 
 networks:
   back-end: {}
