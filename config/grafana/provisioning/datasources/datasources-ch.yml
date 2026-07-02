@@ -6,6 +6,7 @@ datasources:
    access: proxy
    orgId: 1
    url: http://prometheus:9090
+   uid: "PBFA97CFB590B2093"
    version: 1
    editable: true
  - name: ClickHouse
@@ -13,6 +14,7 @@ datasources:
    typeLogoUrl: ''
    access: proxy
    url: http://clickhouse:8123
+   uid: "PDEE91DDB90597936"
    password: ''
    user: ''
    database: ''
@@ -32,3 +34,4 @@ datasources:
    version: 1
    editable: true
    isDefault: false
+   uid: "PD0067CAD9A63E081"
