@@ -14,12 +14,12 @@ from snimpy.manager import load
 import yaml
 
 # IF-MIB, SNMPv2-MIB, HOST-RESOURCES-MIB
-BASE_MODULES = ["if_mib", "system", "hrSystem", "hrDevice", "hrStorage"]
+BASE_MODULES = ["if_mib", "ip_mib", "ip_forward_mib", "system", "hrSystem", "hrDevice", "hrStorage"]
 
 # Currently supported vendors:
 # - OpenWRT
 # - Cisco
-# - TP-Link
+# - D-Link
 # Profile format:
 # - label = vendor name
 # - extra_modules = additional SNMP MIB modules supported by vendor
@@ -27,30 +27,29 @@ BASE_MODULES = ["if_mib", "system", "hrSystem", "hrDevice", "hrStorage"]
 VENDOR_PROFILES = {
     "openwrt": {
         "label": "openwrt",
-        "extra_modules": ["ip_mib", "ucd_system_stats", "ucd_memory", "ip_forward_mib"],
+        "extra_modules": ["ucd_system_stats", "ucd_memory", "ip_forward_mib"],
         "keywords": ["openwrt", "lede"],
     },
     "cisco": {
         "label": "cisco",
-        "extra_modules": ["cisco_device"],
+        "extra_modules": ["bridge_mib", "cisco_cpu", "cisco_memory", "cisco_if_extension", "cisco_envmon", "entity_mib", "cisco_cdp", "cisco_vtp"],
         "keywords": ["cisco", "ios", "catalyst", "nexus", "asr", "isr"],
     },
-    "tplink": {
-        "label": "tplink",
-        "extra_modules": ["ip_mib"],
-        "keywords": ["tp-link", "tplink", "archer", "tl-"],
+    "dlink": {
+        "label": "dlink",
+		"extra_modules": ["bridge_mib", "q_bridge_mib", "p_bridge_mib"],
+		"keywords": ["dlink", "d-link", "des", "dgs"],
     },
-    # TODO: Add D-Link
 }
 
-# Cisco and TP-Link are identified by the presence of the MIB trees
+# Cisco and D-Link are identified by the presence of the MIB trees
 # associated with them
 # OpenWRT is identified by Net-SNMP's MIB tree, which shouldn't lead to
 # false positives so long as sysDescr detection is functioning
 SYSOID_VENDOR_MAP = {
     ".1.3.6.1.4.1.9.":     "cisco",
     ".1.3.6.1.4.1.8072.":  "openwrt",
-    ".1.3.6.1.4.1.11863.": "tplink",
+    ".1.3.6.1.4.1.171.":   "dlink",
 }
 
 # This gets the default IPv4 address and guesses a /24 network based on that
