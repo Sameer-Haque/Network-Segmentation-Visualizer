@@ -1,0 +1,1307 @@
+{
+  "annotations": {
+    "list": [
+      {
+        "builtIn": 1,
+        "datasource": {
+          "type": "grafana",
+          "uid": "-- Grafana --"
+        },
+        "enable": true,
+        "hide": true,
+        "iconColor": "rgba(0, 211, 255, 1)",
+        "name": "Annotations & Alerts",
+        "type": "dashboard"
+      }
+    ]
+  },
+  "editable": true,
+  "fiscalYearStartMonth": 0,
+  "graphTooltip": 0,
+  "links": [],
+  "panels": [
+    {
+      "datasource": {
+        "type": "vertamedia-clickhouse-datasource",
+        "uid": "PDEE91DDB90597936"
+      },
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "mode": "thresholds"
+          },
+          "mappings": [],
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green",
+                "value": 0
+              }
+            ]
+          }
+        },
+        "overrides": []
+      },
+      "gridPos": {
+        "h": 6,
+        "w": 9,
+        "x": 0,
+        "y": 0
+      },
+      "id": 6,
+      "options": {
+        "colorMode": "value",
+        "graphMode": "area",
+        "justifyMode": "auto",
+        "orientation": "auto",
+        "percentChangeColorMode": "standard",
+        "reduceOptions": {
+          "calcs": [
+            "lastNotNull"
+          ],
+          "fields": "",
+          "values": false
+        },
+        "showPercentChange": false,
+        "textMode": "auto",
+        "wideLayout": true
+      },
+      "pluginVersion": "12.4.1",
+      "targets": [
+        {
+          "adHocFilters": [],
+          "adHocValuesQuery": "",
+          "add_metadata": true,
+          "contextWindowSize": "10",
+          "database": "default",
+          "datasource": {
+            "type": "vertamedia-clickhouse-datasource",
+            "uid": "PDEE91DDB90597936"
+          },
+          "dateColDataType": "date",
+          "dateTimeColDataType": "time_flow_start_ns",
+          "dateTimeType": "DATETIME64",
+          "editorMode": "sql",
+          "extrapolate": true,
+          "format": "table",
+          "formattedQuery": "/* grafana dashboard='Clickhouse Flows ', user=admin */\nSELECT sum(bytes) / ((1781566505067 - 1781544905067) / 1000) AS value FROM default.flows_raw\nWHERE date >= toDate(1781544905) AND date <= toDate(1781566505) AND time_flow_start_ns >= toDateTime64(1781544905,3) AND time_flow_start_ns <= toDateTime64(1781566505,3)",
+          "interval": "",
+          "intervalFactor": 1,
+          "nullifySparse": false,
+          "query": "SELECT sum(bytes) / (($__to - $__from) / 1000) AS value FROM $table\nWHERE $timeFilter",
+          "refId": "A",
+          "round": "0s",
+          "skip_comments": true,
+          "table": "flows_raw",
+          "useWindowFuncForMacros": true
+        }
+      ],
+      "title": "Avg Throughput",
+      "type": "stat"
+    },
+    {
+      "datasource": {
+        "type": "vertamedia-clickhouse-datasource",
+        "uid": "PDEE91DDB90597936"
+      },
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "mode": "thresholds"
+          },
+          "mappings": [],
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green",
+                "value": 0
+              }
+            ]
+          }
+        },
+        "overrides": []
+      },
+      "gridPos": {
+        "h": 6,
+        "w": 9,
+        "x": 9,
+        "y": 0
+      },
+      "id": 3,
+      "options": {
+        "colorMode": "value",
+        "graphMode": "area",
+        "justifyMode": "auto",
+        "orientation": "auto",
+        "percentChangeColorMode": "standard",
+        "reduceOptions": {
+          "calcs": [
+            "lastNotNull"
+          ],
+          "fields": "",
+          "values": false
+        },
+        "showPercentChange": false,
+        "textMode": "auto",
+        "wideLayout": true
+      },
+      "pluginVersion": "12.4.1",
+      "targets": [
+        {
+          "adHocFilters": [],
+          "adHocValuesQuery": "",
+          "add_metadata": true,
+          "contextWindowSize": "10",
+          "database": "default",
+          "datasource": {
+            "type": "vertamedia-clickhouse-datasource",
+            "uid": "PDEE91DDB90597936"
+          },
+          "dateColDataType": "date",
+          "dateTimeColDataType": "time_flow_start_ns",
+          "dateTimeType": "DATETIME64",
+          "editorMode": "sql",
+          "extrapolate": true,
+          "format": "table",
+          "formattedQuery": "/* grafana dashboard='Clickhouse Flows ', user=admin */\nSELECT count() AS value FROM default.flows_raw\nWHERE date >= toDate(1781408172) AND date <= toDate(1781429772) AND time_flow_start_ns >= toDateTime64(1781408172,3) AND time_flow_start_ns <= toDateTime64(1781429772,3)",
+          "interval": "",
+          "intervalFactor": 1,
+          "nullifySparse": false,
+          "query": "SELECT count() AS value FROM $table\nWHERE $timeFilter",
+          "refId": "A",
+          "round": "0s",
+          "skip_comments": true,
+          "table": "flows_raw",
+          "useWindowFuncForMacros": true
+        }
+      ],
+      "title": "Total Flows",
+      "type": "stat"
+    },
+    {
+      "datasource": {
+        "type": "vertamedia-clickhouse-datasource",
+        "uid": "PDEE91DDB90597936"
+      },
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "mode": "thresholds"
+          },
+          "mappings": [],
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green",
+                "value": 0
+              }
+            ]
+          }
+        },
+        "overrides": []
+      },
+      "gridPos": {
+        "h": 6,
+        "w": 6,
+        "x": 18,
+        "y": 0
+      },
+      "id": 4,
+      "options": {
+        "colorMode": "value",
+        "graphMode": "area",
+        "justifyMode": "auto",
+        "orientation": "auto",
+        "percentChangeColorMode": "standard",
+        "reduceOptions": {
+          "calcs": [
+            "lastNotNull"
+          ],
+          "fields": "",
+          "values": false
+        },
+        "showPercentChange": false,
+        "textMode": "auto",
+        "wideLayout": true
+      },
+      "pluginVersion": "12.4.1",
+      "targets": [
+        {
+          "adHocFilters": [],
+          "adHocValuesQuery": "",
+          "add_metadata": true,
+          "contextWindowSize": "10",
+          "database": "default",
+          "datasource": {
+            "type": "vertamedia-clickhouse-datasource",
+            "uid": "PDEE91DDB90597936"
+          },
+          "dateColDataType": "date",
+          "dateTimeColDataType": "time_flow_start_ns",
+          "dateTimeType": "DATETIME64",
+          "editorMode": "sql",
+          "extrapolate": true,
+          "format": "table",
+          "formattedQuery": "/* grafana dashboard='Clickhouse Flows ', user=admin */\nSELECT uniq(src_as) AS value FROM default.flows_raw\nWHERE date >= toDate(1781408172) AND date <= toDate(1781429772) AND time_flow_start_ns >= toDateTime64(1781408172,3) AND time_flow_start_ns <= toDateTime64(1781429772,3)",
+          "interval": "",
+          "intervalFactor": 1,
+          "nullifySparse": false,
+          "query": "SELECT uniq(src_as) AS value FROM $table\nWHERE $timeFilter",
+          "refId": "A",
+          "round": "0s",
+          "skip_comments": true,
+          "table": "flows_raw",
+          "useWindowFuncForMacros": true
+        }
+      ],
+      "title": "Unique Source ASNs",
+      "type": "stat"
+    },
+    {
+      "datasource": {
+        "type": "vertamedia-clickhouse-datasource",
+        "uid": "PDEE91DDB90597936"
+      },
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "mode": "thresholds"
+          },
+          "mappings": [],
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green",
+                "value": 0
+              }
+            ]
+          }
+        },
+        "overrides": []
+      },
+      "gridPos": {
+        "h": 6,
+        "w": 9,
+        "x": 0,
+        "y": 6
+      },
+      "id": 1,
+      "options": {
+        "colorMode": "value",
+        "graphMode": "area",
+        "justifyMode": "auto",
+        "orientation": "auto",
+        "percentChangeColorMode": "standard",
+        "reduceOptions": {
+          "calcs": [
+            "lastNotNull"
+          ],
+          "fields": "",
+          "values": false
+        },
+        "showPercentChange": false,
+        "textMode": "auto",
+        "wideLayout": true
+      },
+      "pluginVersion": "12.4.1",
+      "targets": [
+        {
+          "adHocFilters": [],
+          "adHocValuesQuery": "",
+          "add_metadata": true,
+          "contextWindowSize": "10",
+          "database": "default",
+          "datasource": {
+            "type": "vertamedia-clickhouse-datasource",
+            "uid": "PDEE91DDB90597936"
+          },
+          "dateColDataType": "date",
+          "dateTimeColDataType": "time_flow_start_ns",
+          "dateTimeType": "DATETIME64",
+          "editorMode": "sql",
+          "extrapolate": true,
+          "format": "table",
+          "formattedQuery": "/* grafana dashboard='Clickhouse Flows ', user=admin */\nSELECT sum(packets) AS value FROM default.flows_raw\nWHERE date >= toDate(1781544905) AND date <= toDate(1781566505) AND time_flow_start_ns >= toDateTime64(1781544905,3) AND time_flow_start_ns <= toDateTime64(1781566505,3)",
+          "interval": "",
+          "intervalFactor": 1,
+          "nullifySparse": false,
+          "query": "SELECT sum(packets) AS value FROM $table\nWHERE $timeFilter",
+          "refId": "A",
+          "round": "0s",
+          "skip_comments": true,
+          "table": "flows_raw",
+          "useWindowFuncForMacros": true
+        }
+      ],
+      "title": "Total Packets",
+      "type": "stat"
+    },
+    {
+      "datasource": {
+        "type": "vertamedia-clickhouse-datasource",
+        "uid": "PDEE91DDB90597936"
+      },
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "mode": "thresholds"
+          },
+          "mappings": [],
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green",
+                "value": 0
+              }
+            ]
+          },
+          "unit": "decbytes"
+        },
+        "overrides": []
+      },
+      "gridPos": {
+        "h": 6,
+        "w": 9,
+        "x": 9,
+        "y": 6
+      },
+      "id": 2,
+      "options": {
+        "colorMode": "value",
+        "graphMode": "area",
+        "justifyMode": "auto",
+        "orientation": "auto",
+        "percentChangeColorMode": "standard",
+        "reduceOptions": {
+          "calcs": [
+            "lastNotNull"
+          ],
+          "fields": "",
+          "values": false
+        },
+        "showPercentChange": false,
+        "textMode": "auto",
+        "wideLayout": true
+      },
+      "pluginVersion": "12.4.1",
+      "targets": [
+        {
+          "adHocFilters": [],
+          "adHocValuesQuery": "",
+          "add_metadata": true,
+          "contextWindowSize": "10",
+          "database": "default",
+          "datasource": {
+            "type": "vertamedia-clickhouse-datasource",
+            "uid": "PDEE91DDB90597936"
+          },
+          "dateColDataType": "date",
+          "dateTimeColDataType": "time_flow_start_ns",
+          "dateTimeType": "DATETIME64",
+          "editorMode": "sql",
+          "extrapolate": true,
+          "format": "table",
+          "formattedQuery": "/* grafana dashboard='Clickhouse Flows ', user=admin */\nSELECT sum(bytes * sampling_rate) AS value\nFROM default.flows_raw\nWHERE date >= toDate(1781408172) AND date <= toDate(1781429772) AND time_flow_start_ns >= toDateTime64(1781408172,3) AND time_flow_start_ns <= toDateTime64(1781429772,3)",
+          "interval": "",
+          "intervalFactor": 1,
+          "nullifySparse": false,
+          "query": "SELECT sum(bytes * sampling_rate) AS value\nFROM $table\nWHERE $timeFilter",
+          "refId": "A",
+          "round": "0s",
+          "skip_comments": true,
+          "table": "flows_raw",
+          "useWindowFuncForMacros": true
+        }
+      ],
+      "title": "Total Bytes",
+      "type": "stat"
+    },
+    {
+      "datasource": {
+        "type": "vertamedia-clickhouse-datasource",
+        "uid": "PDEE91DDB90597936"
+      },
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "mode": "thresholds"
+          },
+          "mappings": [],
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green",
+                "value": 0
+              }
+            ]
+          }
+        },
+        "overrides": []
+      },
+      "gridPos": {
+        "h": 6,
+        "w": 6,
+        "x": 18,
+        "y": 6
+      },
+      "id": 5,
+      "options": {
+        "colorMode": "value",
+        "graphMode": "area",
+        "justifyMode": "auto",
+        "orientation": "auto",
+        "percentChangeColorMode": "standard",
+        "reduceOptions": {
+          "calcs": [
+            "lastNotNull"
+          ],
+          "fields": "",
+          "values": false
+        },
+        "showPercentChange": false,
+        "textMode": "auto",
+        "wideLayout": true
+      },
+      "pluginVersion": "12.4.1",
+      "targets": [
+        {
+          "adHocFilters": [],
+          "adHocValuesQuery": "",
+          "add_metadata": true,
+          "contextWindowSize": "10",
+          "database": "default",
+          "datasource": {
+            "type": "vertamedia-clickhouse-datasource",
+            "uid": "PDEE91DDB90597936"
+          },
+          "dateColDataType": "date",
+          "dateTimeColDataType": "time_flow_start_ns",
+          "dateTimeType": "DATETIME64",
+          "editorMode": "sql",
+          "extrapolate": true,
+          "format": "table",
+          "formattedQuery": "/* grafana dashboard='New dashboard', user=admin */\nSELECT uniq(sampler_address) AS value FROM default.flows_raw\nWHERE date >= toDate(1781404153) AND date <= toDate(1781425753) AND time_flow_start_ns >= toDateTime64(1781404153,3) AND time_flow_start_ns <= toDateTime64(1781425753,3)",
+          "interval": "",
+          "intervalFactor": 1,
+          "nullifySparse": false,
+          "query": "SELECT uniq(sampler_address) AS value FROM $table\nWHERE $timeFilter",
+          "refId": "A",
+          "round": "0s",
+          "skip_comments": true,
+          "table": "flows_raw",
+          "useWindowFuncForMacros": true
+        }
+      ],
+      "title": "Unique Samplers",
+      "type": "stat"
+    },
+    {
+      "datasource": {
+        "type": "vertamedia-clickhouse-datasource",
+        "uid": "PDEE91DDB90597936"
+      },
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "mode": "thresholds"
+          },
+          "custom": {
+            "align": "auto",
+            "cellOptions": {
+              "type": "auto"
+            },
+            "footer": {
+              "reducers": []
+            },
+            "inspect": false
+          },
+          "mappings": [],
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green",
+                "value": 0
+              },
+              {
+                "color": "red",
+                "value": 80
+              }
+            ]
+          },
+          "unit": "decbytes"
+        },
+        "overrides": []
+      },
+      "gridPos": {
+        "h": 7,
+        "w": 15,
+        "x": 0,
+        "y": 12
+      },
+      "id": 9,
+      "options": {
+        "cellHeight": "sm",
+        "showHeader": true
+      },
+      "pluginVersion": "12.4.1",
+      "targets": [
+        {
+          "adHocFilters": [],
+          "adHocValuesQuery": "",
+          "add_metadata": true,
+          "contextWindowSize": "10",
+          "editorMode": "sql",
+          "extrapolate": true,
+          "format": "table",
+          "formattedQuery": "/* grafana dashboard='New dashboard', user=admin */\nSELECT\n    dictGetString('dictionaries.protocols', 'name', toUInt8(proto)) AS protocol_name,\n    sum(bytes) AS volume\nFROM flows_raw\nWHERE time_received_ns >= now() - INTERVAL 1 HOUR\nGROUP BY protocol_name\nORDER BY volume DESC\nLIMIT 10",
+          "interval": "",
+          "intervalFactor": 1,
+          "nullifySparse": false,
+          "query": "SELECT\n    dictGetString('dictionaries.protocols', 'name', toUInt8(proto)) AS protocol_name,\n    sum(bytes) AS volume\nFROM flows_raw\nWHERE time_received_ns >= now() - INTERVAL 1 HOUR\nGROUP BY protocol_name\nORDER BY volume DESC\nLIMIT 10",
+          "refId": "A",
+          "round": "0s",
+          "skip_comments": true,
+          "useWindowFuncForMacros": true
+        }
+      ],
+      "title": "Top L4 Protocols (1 Hour)",
+      "type": "table"
+    },
+    {
+      "datasource": {
+        "type": "vertamedia-clickhouse-datasource",
+        "uid": "PDEE91DDB90597936"
+      },
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "mode": "palette-classic"
+          },
+          "custom": {
+            "hideFrom": {
+              "legend": false,
+              "tooltip": false,
+              "viz": false
+            }
+          },
+          "mappings": [],
+          "unit": "decbytes"
+        },
+        "overrides": [
+          {
+            "__systemRef": "hideSeriesFrom",
+            "matcher": {
+              "id": "byNames",
+              "options": {
+                "mode": "exclude",
+                "names": [
+                  "value"
+                ],
+                "prefix": "All except:",
+                "readOnly": true
+              }
+            },
+            "properties": [
+              {
+                "id": "custom.hideFrom",
+                "value": {
+                  "legend": false,
+                  "tooltip": true,
+                  "viz": true
+                }
+              }
+            ]
+          }
+        ]
+      },
+      "gridPos": {
+        "h": 7,
+        "w": 9,
+        "x": 15,
+        "y": 12
+      },
+      "id": 11,
+      "options": {
+        "displayLabels": [
+          "name"
+        ],
+        "legend": {
+          "displayMode": "list",
+          "placement": "bottom",
+          "showLegend": true
+        },
+        "pieType": "pie",
+        "reduceOptions": {
+          "calcs": [
+            "lastNotNull"
+          ],
+          "fields": "",
+          "values": true
+        },
+        "sort": "desc",
+        "tooltip": {
+          "hideZeros": false,
+          "mode": "single",
+          "sort": "none"
+        }
+      },
+      "pluginVersion": "12.4.1",
+      "targets": [
+        {
+          "adHocFilters": [],
+          "adHocValuesQuery": "",
+          "add_metadata": true,
+          "contextWindowSize": "10",
+          "database": "default",
+          "dateColDataType": "date",
+          "dateTimeColDataType": "time_flow_start_ns",
+          "dateTimeType": "DATETIME64",
+          "editorMode": "sql",
+          "extrapolate": true,
+          "format": "table",
+          "formattedQuery": "/* grafana dashboard='Clickhouse Flows ', user=admin */\nSELECT\n    dictGetOrDefault('dictionaries.protocols', 'name',\n      toUInt64(proto),\n      concat('proto-', toString(proto))) AS name,\n    sum(bytes * sampling_rate) AS value\nFROM default.flows_raw\nWHERE date >= toDate(1781408172) AND date <= toDate(1781429772) AND time_flow_start_ns >= toDateTime64(1781408172,3) AND time_flow_start_ns <= toDateTime64(1781429772,3)\nGROUP BY proto\nORDER BY value DESC\nLIMIT 10",
+          "interval": "",
+          "intervalFactor": 1,
+          "nullifySparse": false,
+          "query": "SELECT\n    dictGetOrDefault('dictionaries.protocols', 'name',\n      toUInt64(proto),\n      concat('proto-', toString(proto))) AS name,\n    sum(bytes * sampling_rate) AS value\nFROM $table\nWHERE $timeFilter\nGROUP BY proto\nORDER BY value DESC\nLIMIT 10",
+          "refId": "A",
+          "round": "0s",
+          "skip_comments": true,
+          "table": "flows_raw",
+          "useWindowFuncForMacros": true
+        }
+      ],
+      "title": "Protocol distribution by bytes",
+      "type": "piechart"
+    },
+    {
+      "datasource": {
+        "type": "vertamedia-clickhouse-datasource",
+        "uid": "PDEE91DDB90597936"
+      },
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "mode": "palette-classic"
+          },
+          "custom": {
+            "axisBorderShow": false,
+            "axisCenteredZero": false,
+            "axisColorMode": "text",
+            "axisLabel": "",
+            "axisPlacement": "auto",
+            "barAlignment": 0,
+            "barWidthFactor": 0.6,
+            "drawStyle": "line",
+            "fillOpacity": 0,
+            "gradientMode": "none",
+            "hideFrom": {
+              "legend": false,
+              "tooltip": false,
+              "viz": false
+            },
+            "insertNulls": false,
+            "lineInterpolation": "linear",
+            "lineWidth": 1,
+            "pointSize": 5,
+            "scaleDistribution": {
+              "type": "linear"
+            },
+            "showPoints": "auto",
+            "showValues": false,
+            "spanNulls": false,
+            "stacking": {
+              "group": "A",
+              "mode": "none"
+            },
+            "thresholdsStyle": {
+              "mode": "off"
+            }
+          },
+          "mappings": [],
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green",
+                "value": 0
+              },
+              {
+                "color": "red",
+                "value": 80
+              }
+            ]
+          },
+          "unit": "decbytes"
+        },
+        "overrides": []
+      },
+      "gridPos": {
+        "h": 9,
+        "w": 24,
+        "x": 0,
+        "y": 19
+      },
+      "id": 7,
+      "options": {
+        "legend": {
+          "calcs": [],
+          "displayMode": "list",
+          "placement": "bottom",
+          "showLegend": true
+        },
+        "tooltip": {
+          "hideZeros": false,
+          "mode": "single",
+          "sort": "none"
+        }
+      },
+      "pluginVersion": "12.4.1",
+      "targets": [
+        {
+          "adHocFilters": [],
+          "adHocValuesQuery": "",
+          "add_metadata": true,
+          "contextWindowSize": "10",
+          "database": "default",
+          "dateColDataType": "date",
+          "dateTimeColDataType": "time_received_ns",
+          "dateTimeType": "DATETIME64",
+          "editorMode": "sql",
+          "extrapolate": true,
+          "format": "time_series",
+          "formattedQuery": "/* grafana dashboard='Clickhouse Flows ', user=admin */\nSELECT\n    toStartOfFiveMinute(time_received_ns) AS t,\n    multiIf(etype=2048,'IPv4',\n            etype=34525,'IPv6',\n            etype=2054,'ARP',\n            concat('0x',hex(etype))) AS etype,\n    sum(bytes * sampling_rate) AS bytes\nFROM default.flows_raw\nWHERE date >= toDate(1781408172) AND date <= toDate(1781429772) AND time_received_ns >= toDateTime64(1781408172,3) AND time_received_ns <= toDateTime64(1781429772,3)\nGROUP BY t, etype\nORDER BY t ASC",
+          "interval": "",
+          "intervalFactor": 1,
+          "nullifySparse": false,
+          "query": "SELECT\n    toStartOfFiveMinute(time_received_ns) AS t,\n    multiIf(etype=2048,'IPv4',\n            etype=34525,'IPv6',\n            etype=2054,'ARP',\n            concat('0x',hex(etype))) AS etype,\n    sum(bytes * sampling_rate) AS bytes\nFROM $table\nWHERE $timeFilter\nGROUP BY t, etype\nORDER BY t ASC",
+          "refId": "A",
+          "round": "0s",
+          "skip_comments": true,
+          "table": "flows_raw",
+          "useWindowFuncForMacros": true
+        }
+      ],
+      "title": "Traffic over time — bytes by EType:",
+      "type": "timeseries"
+    },
+    {
+      "datasource": {
+        "type": "vertamedia-clickhouse-datasource",
+        "uid": "PDEE91DDB90597936"
+      },
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "mode": "palette-classic"
+          },
+          "custom": {
+            "axisBorderShow": false,
+            "axisCenteredZero": false,
+            "axisColorMode": "text",
+            "axisLabel": "",
+            "axisPlacement": "auto",
+            "barAlignment": 0,
+            "barWidthFactor": 0.6,
+            "drawStyle": "line",
+            "fillOpacity": 0,
+            "gradientMode": "none",
+            "hideFrom": {
+              "legend": false,
+              "tooltip": false,
+              "viz": false
+            },
+            "insertNulls": false,
+            "lineInterpolation": "linear",
+            "lineWidth": 1,
+            "pointSize": 5,
+            "scaleDistribution": {
+              "type": "linear"
+            },
+            "showPoints": "auto",
+            "showValues": false,
+            "spanNulls": false,
+            "stacking": {
+              "group": "A",
+              "mode": "none"
+            },
+            "thresholdsStyle": {
+              "mode": "off"
+            }
+          },
+          "mappings": [],
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green",
+                "value": 0
+              },
+              {
+                "color": "red",
+                "value": 80
+              }
+            ]
+          }
+        },
+        "overrides": []
+      },
+      "gridPos": {
+        "h": 9,
+        "w": 24,
+        "x": 0,
+        "y": 28
+      },
+      "id": 10,
+      "options": {
+        "legend": {
+          "calcs": [],
+          "displayMode": "list",
+          "placement": "bottom",
+          "showLegend": true
+        },
+        "tooltip": {
+          "hideZeros": false,
+          "mode": "single",
+          "sort": "none"
+        }
+      },
+      "pluginVersion": "12.4.1",
+      "targets": [
+        {
+          "adHocFilters": [],
+          "adHocValuesQuery": "",
+          "add_metadata": true,
+          "contextWindowSize": "10",
+          "database": "default",
+          "dateColDataType": "date",
+          "dateTimeColDataType": "timeslot",
+          "dateTimeType": "DATETIME",
+          "editorMode": "sql",
+          "extrapolate": true,
+          "format": "time_series",
+          "formattedQuery": "/* grafana dashboard='Clickhouse Flows ', user=admin */\nSELECT\n    timeslot AS t,\n    sum(count) AS flow_count\nFROM default.flows_5m\nWHERE date >= toDate(1781408172) AND date <= toDate(1781429772) AND timeslot >= toDateTime(1781408172) AND timeslot <= toDateTime(1781429772)\nGROUP BY t\nORDER BY t ASC",
+          "interval": "",
+          "intervalFactor": 1,
+          "nullifySparse": false,
+          "query": "SELECT\n    timeslot AS t,\n    sum(count) AS flow_count\nFROM $table\nWHERE $timeFilter\nGROUP BY t\nORDER BY t ASC\n",
+          "refId": "A",
+          "round": "0s",
+          "skip_comments": true,
+          "table": "flows_5m",
+          "useWindowFuncForMacros": true
+        }
+      ],
+      "title": "Flow count over time",
+      "type": "timeseries"
+    },
+    {
+      "datasource": {
+        "type": "vertamedia-clickhouse-datasource",
+        "uid": "PDEE91DDB90597936"
+      },
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "mode": "palette-classic"
+          },
+          "custom": {
+            "hideFrom": {
+              "legend": false,
+              "tooltip": false,
+              "viz": false
+            }
+          },
+          "mappings": []
+        },
+        "overrides": [
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "bytes"
+            },
+            "properties": [
+              {
+                "id": "unit",
+                "value": "decbytes"
+              }
+            ]
+          }
+        ]
+      },
+      "gridPos": {
+        "h": 8,
+        "w": 12,
+        "x": 0,
+        "y": 37
+      },
+      "id": 14,
+      "options": {
+        "legend": {
+          "displayMode": "list",
+          "placement": "bottom",
+          "showLegend": true
+        },
+        "pieType": "pie",
+        "reduceOptions": {
+          "calcs": [
+            "lastNotNull"
+          ],
+          "fields": "",
+          "limit": 15,
+          "values": true
+        },
+        "sort": "desc",
+        "tooltip": {
+          "hideZeros": false,
+          "mode": "single",
+          "sort": "none"
+        }
+      },
+      "pluginVersion": "12.4.1",
+      "targets": [
+        {
+          "adHocFilters": [],
+          "adHocValuesQuery": "",
+          "add_metadata": true,
+          "contextWindowSize": "10",
+          "database": "default",
+          "dateColDataType": "date",
+          "dateTimeColDataType": "time_flow_start_ns",
+          "dateTimeType": "TIMESTAMP",
+          "editorMode": "sql",
+          "extrapolate": true,
+          "format": "table",
+          "formattedQuery": "/* grafana dashboard='Clickhouse Flows ', user=admin */\nSELECT\n    toString(dst_port) AS name,\n    sum(bytes * sampling_rate) AS value\nFROM default.flows_raw\nWHERE date >= toDate(1781544905) AND date <= toDate(1781566505) AND time_flow_start_ns >= 1781544905 AND time_flow_start_ns <= 1781566505\n  AND proto IN (6, 17)\nGROUP BY dst_port\nORDER BY value DESC\nLIMIT 10",
+          "interval": "",
+          "intervalFactor": 1,
+          "nullifySparse": false,
+          "query": "SELECT\n    toString(dst_port) AS name,\n    sum(bytes * sampling_rate) AS value\nFROM $table\nWHERE $timeFilter\n  AND proto IN (6, 17)\nGROUP BY dst_port\nORDER BY value DESC\nLIMIT 10",
+          "refId": "A",
+          "round": "0s",
+          "showFormattedSQL": true,
+          "skip_comments": true,
+          "table": "flows_raw",
+          "useWindowFuncForMacros": true
+        }
+      ],
+      "title": "Top 10 destination ports (TCP + UDP)",
+      "type": "piechart"
+    },
+    {
+      "datasource": {
+        "type": "vertamedia-clickhouse-datasource",
+        "uid": "PDEE91DDB90597936"
+      },
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "mode": "thresholds"
+          },
+          "custom": {
+            "align": "auto",
+            "cellOptions": {
+              "type": "auto"
+            },
+            "footer": {
+              "reducers": []
+            },
+            "inspect": false
+          },
+          "mappings": [],
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green",
+                "value": 0
+              },
+              {
+                "color": "red",
+                "value": 80
+              }
+            ]
+          }
+        },
+        "overrides": [
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "bytes"
+            },
+            "properties": [
+              {
+                "id": "unit",
+                "value": "decbytes"
+              }
+            ]
+          }
+        ]
+      },
+      "gridPos": {
+        "h": 8,
+        "w": 24,
+        "x": 0,
+        "y": 45
+      },
+      "id": 13,
+      "options": {
+        "cellHeight": "sm",
+        "frameIndex": 3,
+        "showHeader": true,
+        "sortBy": [
+          {
+            "desc": true,
+            "displayName": "bytes"
+          }
+        ]
+      },
+      "pluginVersion": "12.4.1",
+      "targets": [
+        {
+          "adHocFilters": [],
+          "adHocValuesQuery": "",
+          "add_metadata": true,
+          "contextWindowSize": "10",
+          "database": "default",
+          "dateColDataType": "date",
+          "dateTimeColDataType": "time_flow_start_ns",
+          "dateTimeType": "TIMESTAMP",
+          "editorMode": "sql",
+          "extrapolate": true,
+          "format": "table",
+          "formattedQuery": "/* grafana dashboard='Clickhouse Flows ', user=admin */\nSELECT\n    IPv4NumToString(reinterpretAsUInt32(substring(reverse(src_addr),13,4))) AS src_addr,\n    IPv4NumToString(reinterpretAsUInt32(substring(reverse(dst_addr),13,4))) AS dst_addr,\n    src_port,\n    dst_port,\n    dictGetOrDefault('dictionaries.protocols', 'name',\n      toUInt64(proto), toString(proto)) AS proto,\n    sum(bytes * sampling_rate) AS bytes,\n    sum(packets) AS packets,\n    count() AS flow_count\nFROM default.flows_raw\nWHERE date >= toDate(1781544568) AND date <= toDate(1781566168) AND time_flow_start_ns >= 1781544568 AND time_flow_start_ns <= 1781566168\nGROUP BY src_addr, dst_addr, src_port, dst_port, proto\nORDER BY bytes DESC\nLIMIT 20",
+          "interval": "",
+          "intervalFactor": 1,
+          "nullifySparse": false,
+          "query": "SELECT\n    IPv4NumToString(reinterpretAsUInt32(substring(reverse(src_addr),13,4))) AS src_addr,\n    IPv4NumToString(reinterpretAsUInt32(substring(reverse(dst_addr),13,4))) AS dst_addr,\n    src_port,\n    dst_port,\n    dictGetOrDefault('dictionaries.protocols', 'name',\n      toUInt64(proto), toString(proto)) AS proto,\n    sum(bytes * sampling_rate) AS bytes,\n    sum(packets) AS packets,\n    count() AS flow_count\nFROM $table\nWHERE $timeFilter\nGROUP BY src_addr, dst_addr, src_port, dst_port, proto\nORDER BY bytes DESC\nLIMIT 20",
+          "refId": "A",
+          "round": "0s",
+          "skip_comments": true,
+          "table": "flows_raw",
+          "useWindowFuncForMacros": true
+        }
+      ],
+      "title": "Top 20 flows by bytes",
+      "type": "table"
+    },
+    {
+      "datasource": {
+        "type": "vertamedia-clickhouse-datasource",
+        "uid": "PDEE91DDB90597936"
+      },
+      "description": "Last 100 Events",
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "mode": "thresholds"
+          },
+          "custom": {
+            "align": "auto",
+            "cellOptions": {
+              "type": "auto"
+            },
+            "footer": {
+              "reducers": []
+            },
+            "inspect": false
+          },
+          "mappings": [],
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green",
+                "value": 0
+              },
+              {
+                "color": "red",
+                "value": 80
+              }
+            ]
+          }
+        },
+        "overrides": [
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "Timestamp"
+            },
+            "properties": [
+              {
+                "id": "custom.width",
+                "value": 255
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "Bytes"
+            },
+            "properties": [
+              {
+                "id": "unit",
+                "value": "decbytes"
+              }
+            ]
+          }
+        ]
+      },
+      "gridPos": {
+        "h": 9,
+        "w": 24,
+        "x": 0,
+        "y": 53
+      },
+      "id": 8,
+      "options": {
+        "cellHeight": "sm",
+        "showHeader": true
+      },
+      "pluginVersion": "12.4.1",
+      "targets": [
+        {
+          "adHocFilters": [],
+          "adHocValuesQuery": "",
+          "add_metadata": true,
+          "contextWindowSize": "10",
+          "database": "default",
+          "dateColDataType": "date",
+          "dateTimeColDataType": "time_received_ns",
+          "dateTimeType": "DATETIME64",
+          "editorMode": "sql",
+          "extrapolate": true,
+          "format": "table",
+          "formattedQuery": "/* grafana dashboard='Clickhouse Flows ', user=admin */\nSELECT\n    time_received_ns AS \"Timestamp\",\n    \n    IPv4NumToString(reinterpretAsUInt32(substring(src_addr, 1, 4))) AS \"Source IP\",\n    src_port AS \"Src Port\",\n    \n    IPv4NumToString(reinterpretAsUInt32(substring(dst_addr, 1, 4))) AS \"Dest IP\",\n    dst_port AS \"Dst Port\",\n    dictGetString('dictionaries.protocols', 'name', toUInt8(proto)) AS \"Proto\",\n    bytes AS \"Bytes\",\n    packets AS \"Packets\"\nFROM default.flows_raw\nWHERE time_received_ns >= toDateTime64(1781549387, 9)\n  AND time_received_ns <= toDateTime64(1781570987, 9)\n  AND ('$Source_ASN' = 'All' OR '$Source_ASN' = '*' OR src_as = toUInt32OrZero('$Source_ASN'))\n  AND ('$dst_as' = 'All' OR '$dst_as' = '*' OR dst_as = toUInt32OrZero('$dst_as'))\nORDER BY time_received_ns DESC\nLIMIT 100",
+          "interval": "",
+          "intervalFactor": 1,
+          "nullifySparse": false,
+          "query": "SELECT\n    time_received_ns AS \"Timestamp\",\n    -- Slice the first 4 bytes and interpret them as an IPv4 integer\n    IPv4NumToString(reinterpretAsUInt32(substring(src_addr, 1, 4))) AS \"Source IP\",\n    src_port AS \"Src Port\",\n    -- Slice the first 4 bytes and interpret them as an IPv4 integer\n    IPv4NumToString(reinterpretAsUInt32(substring(dst_addr, 1, 4))) AS \"Dest IP\",\n    dst_port AS \"Dst Port\",\n    dictGetString('dictionaries.protocols', 'name', toUInt8(proto)) AS \"Proto\",\n    bytes AS \"Bytes\",\n    packets AS \"Packets\"\nFROM default.flows_raw\nWHERE time_received_ns >= toDateTime64($from, 9)\n  AND time_received_ns <= toDateTime64($to, 9)\n  AND ('$Source_ASN' = 'All' OR '$Source_ASN' = '*' OR src_as = toUInt32OrZero('$Source_ASN'))\n  AND ('$dst_as' = 'All' OR '$dst_as' = '*' OR dst_as = toUInt32OrZero('$dst_as'))\nORDER BY time_received_ns DESC\nLIMIT 100",
+          "refId": "A",
+          "round": "0s",
+          "showFormattedSQL": true,
+          "skip_comments": true,
+          "table": "flows_raw",
+          "useWindowFuncForMacros": true
+        }
+      ],
+      "title": "Raw Flow Event Log",
+      "type": "table"
+    }
+  ],
+  "preload": false,
+  "schemaVersion": 42,
+  "tags": [],
+  "templating": {
+    "list": [
+      {
+        "current": {
+          "text": "All",
+          "value": [
+            "$__all"
+          ]
+        },
+        "datasource": {
+          "type": "vertamedia-clickhouse-datasource",
+          "uid": "PDEE91DDB90597936"
+        },
+        "definition": "SELECT DISTINCT\n    IPv4NumToString(reinterpretAsUInt32(substring(reverse(sampler_address),13,4)))\nFROM flows_raw ORDER BY 1",
+        "description": "",
+        "includeAll": true,
+        "label": "Sampler",
+        "multi": true,
+        "name": "sampler",
+        "options": [],
+        "query": {
+          "adHocFilters": [],
+          "adHocValuesQuery": "",
+          "add_metadata": true,
+          "contextWindowSize": "10",
+          "database": "default",
+          "datasourceMode": "Variable",
+          "editorMode": "builder",
+          "extrapolate": true,
+          "format": "time_series",
+          "formattedQuery": "/* grafana dashboard='Clickhouse Flows ', user=admin */\nSELECT DISTINCT\n    IPv4NumToString(reinterpretAsUInt32(substring(reverse(sampler_address),13,4)))\nFROM flows_raw ORDER BY 1",
+          "interval": "",
+          "intervalFactor": 1,
+          "nullifySparse": false,
+          "query": "SELECT DISTINCT\n    IPv4NumToString(reinterpretAsUInt32(substring(reverse(sampler_address),13,4)))\nFROM flows_raw ORDER BY 1",
+          "round": "0s",
+          "showFormattedSQL": true,
+          "showHelp": false,
+          "skip_comments": true,
+          "table": "flows_raw",
+          "useWindowFuncForMacros": true
+        },
+        "refresh": 1,
+        "regex": "",
+        "regexApplyTo": "value",
+        "type": "query"
+      },
+      {
+        "allValue": "*",
+        "current": {
+          "text": "All",
+          "value": "$__all"
+        },
+        "datasource": {
+          "type": "vertamedia-clickhouse-datasource",
+          "uid": "PDEE91DDB90597936"
+        },
+        "definition": "SELECT DISTINCT src_as FROM flows_raw\nWHERE src_as > 0 ORDER BY 1 LIMIT 500",
+        "description": "",
+        "includeAll": true,
+        "label": "Source ASN",
+        "multi": true,
+        "name": "src_as",
+        "options": [],
+        "query": {
+          "adHocFilters": [],
+          "adHocValuesQuery": "",
+          "add_metadata": true,
+          "contextWindowSize": "10",
+          "database": "default",
+          "datasourceMode": "Variable",
+          "dateColDataType": "date",
+          "dateTimeColDataType": "time_flow_start_ns",
+          "dateTimeType": "DATETIME64",
+          "editorMode": "sql",
+          "extrapolate": true,
+          "format": "time_series",
+          "formattedQuery": "/* grafana dashboard='Clickhouse Flows ', user=admin */\nSELECT DISTINCT src_as FROM flows_raw\nWHERE src_as > 0 ORDER BY 1 LIMIT 500",
+          "interval": "",
+          "intervalFactor": 1,
+          "nullifySparse": false,
+          "query": "SELECT DISTINCT src_as FROM flows_raw\nWHERE src_as > 0 ORDER BY 1 LIMIT 500",
+          "round": "0s",
+          "skip_comments": true,
+          "table": "flows_raw",
+          "useWindowFuncForMacros": true
+        },
+        "refresh": 1,
+        "regex": "",
+        "regexApplyTo": "value",
+        "type": "query"
+      }
+    ]
+  },
+  "time": {
+    "from": "now-6h",
+    "to": "now"
+  },
+  "timepicker": {},
+  "timezone": "browser",
+  "title": "Clickhouse Flows ",
+  "uid": "adxvbw9",
+  "version": 5,
+  "weekStart": ""
+}
