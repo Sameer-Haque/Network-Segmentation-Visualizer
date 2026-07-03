@@ -27,7 +27,7 @@ BASE_MODULES = ["if_mib", "ip_mib", "ip_forward_mib", "system", "hrSystem", "hrD
 VENDOR_PROFILES = {
     "openwrt": {
         "label": "openwrt",
-        "extra_modules": ["ucd_system_stats", "ucd_memory", "ip_forward_mib"],
+        "extra_modules": ["ucd_system_stats", "ucd_memory"],
         "keywords": ["openwrt", "lede"],
     },
     "cisco": {
