@@ -13,7 +13,7 @@ groups:
               relativeTimeRange:
                 from: 300
                 to: 0
-              datasourceUid: __expr__
+              datasourceUid: PDEE91DDB90597936
               model:
                 adHocFilters: []
                 adHocValuesQuery: ""
@@ -97,7 +97,7 @@ groups:
                 type: threshold
           noDataState: OK
           execErrState: Error
-          for: 5m
+          for: 0m
           annotations:
             description: This alert is triggered if traffic is detected on TCP or UDP port 23 in Netflow.
             summary: Traffic on the port reserved for Telnet was detected.
