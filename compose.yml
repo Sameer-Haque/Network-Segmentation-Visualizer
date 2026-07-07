@@ -8,6 +8,7 @@ services:
     container_name: node-map
     network_mode: host
     volumes: [./node-map:/nodemap]
+
   grafana:
     image: grafana/grafana:latest
     container_name: grafana
@@ -22,39 +23,6 @@ services:
       - ./config/grafana/provisioning:/etc/grafana/provisioning
       - ./config/grafana/lib:/var/lib/grafana
       - ./config/grafana/grafana.ini:/etc/grafana/grafana.ini
-
-# This section commented out for now
-# May be used for future features
-#
-#  loki:
-#    image: grafana/loki:latest
-#    container_name: loki
-#    restart: unless-stopped
-#    ports:
-#      - "3100:3100/tcp"
-#    networks:
-#      - back-end
-#
-#  promtail:
-#    image: grafana/promtail:latest
-#    container_name: promtail
-#    restart: unless-stopped
-#    ports:
-#      - "9080:9080/tcp"
-#    networks:
-#      - back-end
-#
-#  syslog-ng:
-#    image: balabit/syslog-ng:latest
-#    container_name: syslog-ng
-#    restart: unless-stopped
-#    ports:
-#      - "514:5140/udp"
-#      - "601:6010/tcp"
-#      - "6514:6514/tcp"
-#    networks:
-#      - back-end
-#
 
   prometheus:
     image: prom/prometheus:latest
@@ -79,40 +47,6 @@ services:
       - ./config/snmp-exporter/snmp.yml:/etc/snmp_exporter/snmp.yml:ro
     command:
       - '--config.file=/etc/snmp_exporter/snmp.yml'
-
-# This section commented out for now
-# Not required for PoC features
-# May be used for future features
-#
-#  node-exporter:
-#    image: prom/node-exporter:latest
-#    container_name: node-exporter
-#    restart: unless-stopped
-#    ports:
-#      - "9100:9100/tcp"
-#    networks:
-#      - back-end
-#
-
-# This section commented out for now
-# Not required for PoC features
-# May be used for future features
-# The port for cadvisor needs to be changed before enabling it to prevent conflict with goflow2
-#
-#  cadvisor:
-#    image: ghcr.io/google/cadvisor:latest
-#    container_name: cadvisor
-#    restart: unless-stopped
-#    ports:
-#      - "8080:8080/tcp"
-#    networks:
-#      - back-end
-#    volumes:
-#      - /:/rootfs:ro
-#      - /var/run:/var/run:rw
-#      - /sys:/sys:ro
-#      - /var/lib/docker/:/var/lib/docker:ro
-#
 
   goflow2:
     image: netsampler/goflow2:latest
@@ -174,7 +108,6 @@ services:
       - "9092:9092/tcp"
     networks:
       - back-end
-
 
 networks:
   back-end: {}
