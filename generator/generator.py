@@ -160,7 +160,8 @@ def main():
     parser.add_argument("--network", default=None, help='Network to scan in CIDR notation')
     parser.add_argument("--community", default="public", help='SNMP community to scan (default: public)')
     parser.add_argument("--version", type=int, default=2, help='SNMP version to use for scan (default: 2)')
-    parser.add_argument("--output", default="./config/prometheus/prometheus.yml", help='Output file (default: ./config/prometheus/prometheus.yml)')
+    parser.add_argument("--output-conf", default="./config/prometheus/prometheus.yml", help='Output file for Prometheus configuration (default: ./config/prometheus/prometheus.yml)')
+    parser.add_argument("--output-hosts", default="./config/node-map/snmp_devices.csv", help='Output file for node-map SNMP info (default: ./config/node-map/snmp_devices.csv)')
 
     args = parser.parse_args()
 
@@ -171,14 +172,17 @@ def main():
     if len(hosts) == 0:
         print("Warning: No SNMP hosts found")
 
-    try:
-        out = os.path.join(args.output)
-        os.makedirs(os.path.dirname(out), exist_ok=True)
-        with open(out, "w") as f:
-            yaml.dump(cfg, f, default_flow_style=False, sort_keys=False)        
-        print(f"Wrote {out} ({len(hosts)} SNMP host(s))")
+    print(f"{len(hosts)} SNMP host(s)")
 
-        nodemap_out = os.path.join(os.path.dirname(out), "snmp_devices.csv")
+    try:
+        conf_out = os.path.join(args.output_conf)
+        os.makedirs(os.path.dirname(conf_out), exist_ok=True)
+        with open(conf_out, "w") as f:
+            yaml.dump(cfg, f, default_flow_style=False, sort_keys=False)        
+        print(f"Wrote {conf_out}")
+
+        nodemap_out = os.path.join(args.output_hosts)
+        os.makedirs(os.path.dirname(nodemap_out), exist_ok=True)
         with open(nodemap_out, "w", newline="") as f:
             writer = csv.writer(f)
             writer.writerow(["ip", "port", "community"])
