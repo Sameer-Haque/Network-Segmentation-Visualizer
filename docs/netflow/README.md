@@ -66,11 +66,11 @@ flow exporter EXPORTER-NAME
 description DESCRIPTION
 destination {IP-ADDRESS | HOSTNAME} [vrf VRF-NAME]
 dscp DSCP
-source interface-type interface-number
+source INTERFACE-TYPE INTERFACE-NUMBER
 output-features
-template data timeout seconds
-transport udp udp-port
-ttl seconds
+template data timeout SECONDS
+transport udp 2055
+ttl SECONDS
 end 
 ```
 
