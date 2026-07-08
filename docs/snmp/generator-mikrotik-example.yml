@@ -1,0 +1,155 @@
+auths:
+  public_v1:
+    version: 1
+  public_v2:
+    version: 2
+    
+modules:
+
+  ##Standard MIBs (same as OpenWRT config, included for base compatibility)##
+
+  system:
+    walk:
+      - "SNMPv2-MIB::system"
+    lookups:
+      - source_indexes: [sysORIndex]
+        lookup: "SNMPv2-MIB::sysORDescr"
+
+  if_mib:
+    walk:
+      - "IF-MIB::interfaces"
+      - "IF-MIB::ifXTable"
+    lookups:
+      - source_indexes: [ifIndex]
+        lookup: "IF-MIB::ifAlias"
+      - source_indexes: [ifIndex]
+        lookup: "IF-MIB::ifDescr"
+      - source_indexes: [ifIndex]
+        lookup: "IF-MIB::ifName"
+    overrides:
+      ifAlias:
+        ignore: true
+      ifDescr:
+        ignore: true
+      ifName:
+        ignore: true
+      ifType:
+        type: EnumAsInfo
+
+  ip_mib:
+    walk:
+      - "IP-MIB::ipAddrTable"
+      - "IP-MIB::ipNetToMediaTable"
+    lookups:
+      - source_indexes: [ipAddressAddr]
+        lookup: "IP-MIB::ipAddressAddrType"
+    overrides:
+      ipAddressAddrType:
+        ignore: true # Lookup metric
+
+  ip_forward_mib:
+    walk:
+      - "IP-FORWARD-MIB::ipCidrRouteTable"
+    lookups:
+      - source_indexes: [ipCidrRouteDest]
+        lookup: "IP-FORWARD-MIB::ipCidrRouteType"
+    overrides:
+      ipCidrRouteType:
+        ignore: true # Lookup metric
+
+  hrSystem:
+    walk:
+      - "HOST-RESOURCES-MIB::hrSystem"
+
+  hrStorage:
+    walk:
+      - "HOST-RESOURCES-MIB::hrStorage"
+    lookups:
+      - source_indexes: [hrStorageIndex]
+        lookup: "HOST-RESOURCES-MIB::hrStorageDescr"
+      - source_indexes: [hrStorageIndex]
+        lookup: "HOST-RESOURCES-MIB::hrStorageType"
+    overrides:
+      hrStorageIndex:
+        ignore: true
+      hrStorageType:
+        ignore: true
+      hrStorageDescr:
+        ignore: true
+
+  hrDevice:
+    walk:
+      - "HOST-RESOURCES-MIB::hrDevice"
+    lookups:
+      - source_indexes: [hrDeviceIndex]
+        lookup: "HOST-RESOURCES-MIB::hrDeviceDescr"
+      - source_indexes: [hrDeviceIndex]
+        lookup: "HOST-RESOURCES-MIB::hrDeviceType"
+    overrides:
+      hrDeviceIndex:
+        ignore: true
+      hrDeviceType:
+        ignore: true
+      hrDeviceDescr:
+        ignore: true
+
+## BRIDGE-MIB module ##
+
+  bridge_mib:
+    walk:
+      - "BRIDGE-MIB::dot1dBridge"     # Base bridge info
+      - "BRIDGE-MIB::dot1dTp"         # Transparent bridging / MAC table
+      - "BRIDGE-MIB::dot1dStp"        # Spanning tree state
+    lookups:
+      - source_indexes: [dot1dTpFdbAddress]
+        lookup: "BRIDGE-MIB::dot1dTpFdbPort"
+      - source_indexes: [dot1dTpFdbAddress]
+        lookup: "BRIDGE-MIB::dot1dTpFdbStatus"
+    overrides:
+      dot1dTpFdbStatus:
+        type: EnumAsStateSet
+        
+  # Mikrotik Router
+  #
+  # http://download2.mikrotik.com/Mikrotik.mib
+  mikrotik:
+    walk:
+      - "MIKROTIK-MIB::mikrotik"
+    lookups:
+      - source_indexes: [ifIndex]
+        lookup: ifName
+      - source_indexes: [mtxrInterfaceStatsIndex]
+        lookup: ifName
+      - source_indexes: [mtxrGaugeIndex]
+        lookup: mtxrGaugeName
+        drop_source_indexes: true
+      - source_indexes: [mtxrNeighborIndex]
+        lookup: mtxrNeighborMacAddress
+        drop_source_indexes: true
+      - source_indexes: [mtxrNeighborIndex]
+        lookup: mtxrNeighborInterfaceID
+      - source_indexes: [mtxrNeighborInterfaceID]
+        lookup: ifName
+        drop_source_indexes: true
+      - source_indexes: [mtxrOpticalIndex]
+        lookup: mtxrOpticalName
+      - source_indexes: [mtxrPOEInterfaceIndex]
+        lookup: mtxrPOEName
+      - source_indexes: [mtxrPartitionIndex]
+        lookup: mtxrPartitionName
+      - source_indexes: [mtxrRemoteCapId]
+        lookup: mtxrRemoteCapIdentity
+        drop_source_indexes: true
+      - source_indexes: [mtxrWifiInterfacesId]
+        lookup: ifName
+        drop_source_indexes: true
+      - source_indexes: [mtxrWifiRegistrationInterface]
+        lookup: ifName
+        drop_source_indexes: true
+    overrides:
+      mtxrRemoteCapIdentity:
+        ignore: true # information is redundant
+      mtxrWifiInterfacesName:
+        ignore: true # information is redundant
+      mtxrWifiRegistrationMacAddress:
+        ignore: true # information is redundant
