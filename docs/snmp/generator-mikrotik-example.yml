@@ -112,7 +112,7 @@ modules:
   # Mikrotik Router
   #
   # http://download2.mikrotik.com/Mikrotik.mib
-  mikrotik:
+  mikrotik_mib:
     walk:
       - "MIKROTIK-MIB::mikrotik"
     lookups:
