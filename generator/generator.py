@@ -44,7 +44,7 @@ VENDOR_PROFILES = {
     },
     "mikrotik": {
         "label": "mikrotik",
-        "extra_modules": ["bridge_mib", "mikrotik_mib"],
+        "extra_modules": ["mikrotik_mib"],
         "keywords": ["mikrotik", "routeros"]
     },
 }
