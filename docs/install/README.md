@@ -39,7 +39,9 @@ git clone https://github.com/Sameer-Haque/Network-Segmentation-Visualizer
 cd Network-Segmentation-Visualizer
 chmod -Rv a+w config/grafana/lib
 su root
-python3 generator/generator.py
+cd generator
+python3 ./generator.py
+cd ../
 ```
 
 Then you can start up the visualizer:

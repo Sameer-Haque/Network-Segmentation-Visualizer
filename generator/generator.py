@@ -10,16 +10,18 @@ import nmap
 # needs snimpy
 from snimpy.manager import Manager as M
 from snimpy.manager import load
+import snimpy
 # needs PyYAML
 import yaml
 
-# IF-MIB, SNMPv2-MIB, HOST-RESOURCES-MIB
+# IF-MIB, IP-MIB, IP-FORWARD-MIB, SNMPv2-MIB, HOST-RESOURCES-MIB
 BASE_MODULES = ["if_mib", "ip_mib", "ip_forward_mib", "system", "hrSystem", "hrDevice", "hrStorage"]
 
 # Currently supported vendors:
 # - OpenWRT
 # - Cisco
-# - D-Link
+# - D-Link (untested)
+# - TODO: Support Mikrotik
 # Profile format:
 # - label = vendor name
 # - extra_modules = additional SNMP MIB modules supported by vendor
@@ -57,6 +59,8 @@ SYSOID_VENDOR_MAP = {
 def get_local_network():
     print("Warning: No network provided, guessing based on default IPv4 address")
     s = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
+    # Reserved TEST-NET-1 address used so we do not actually get a connection
+    # We just want to know the address assigned on our end
     s.connect(("192.0.2.1", 1))
     ip = s.getsockname()[0]
     s.close()
@@ -84,6 +88,7 @@ def detect_vendor(sys_oid, sys_descr, nmap_hints):
 # nmap scan and snimpy data gathering
 def scan(network, community, version):
     nm = nmap.PortScanner()
+    # Run nmap with our args to scan for SNMP devices
     try:
         nm.scan(hosts=network, arguments="-sU -p161 --open -T4 -O --host-timeout 30s")
     except Exception as e:
@@ -93,6 +98,7 @@ def scan(network, community, version):
 
     print(f"SNMP hosts: {nm.all_hosts()}")
 
+    # Grab some device information using SNMPv2-MIB for identification
     hosts = []
     load("SNMPv2-MIB")
     for ip in nm.all_hosts():
@@ -119,8 +125,8 @@ def scan(network, community, version):
     return hosts
 
 # Build Prometheus config for PyYAML dump
-# TODO: Add support for alerting rules
 def build_prometheus_config(hosts, auth):
+	# Metrics from other applications in the visualizer stack
     static_jobs = [
         {"job_name": "prometheus",    "static_configs": [{"targets": ["prometheus:9090"]}]},
         {"job_name": "grafana",       "static_configs": [{"targets": ["grafana:3000"]}]},
@@ -128,6 +134,7 @@ def build_prometheus_config(hosts, auth):
         {"job_name": "snmp_exporter", "static_configs": [{"targets": ["snmp-exporter:9116"]}]},
     ]
 
+    # Scrape jobs for snmp-exporter, one per SNMP device, with modules set based on vendor detection
     snmp_jobs = []
     for h in hosts:
         modules = BASE_MODULES + (h["profile"]["extra_modules"] if h["profile"] else [])
@@ -143,6 +150,8 @@ def build_prometheus_config(hosts, auth):
             ],
         })
 
+    # Global configuration options
+    # Set metrics update interval at 15 seconds
     return {
         "global": {"scrape_interval": "15s", "evaluation_interval": "15s"},
         "alerting": {"alertmanagers": [{"static_configs": [{"targets": []}]}]},
@@ -152,6 +161,7 @@ def build_prometheus_config(hosts, auth):
 
 
 def main():
+	# Setup args and help
     parser = argparse.ArgumentParser(
                       description='Generates Prometheus configuration for Network Segmentation Visualizer',
                       epilog='For further details check the README')
@@ -160,27 +170,35 @@ def main():
     parser.add_argument("--network", default=None, help='Network to scan in CIDR notation')
     parser.add_argument("--community", default="public", help='SNMP community to scan (default: public)')
     parser.add_argument("--version", type=int, default=2, help='SNMP version to use for scan (default: 2)')
-    parser.add_argument("--output-conf", default="./config/prometheus/prometheus.yml", help='Output file for Prometheus configuration (default: ./config/prometheus/prometheus.yml)')
-    parser.add_argument("--output-hosts", default="./config/node-map/snmp_devices.csv", help='Output file for node-map SNMP info (default: ./config/node-map/snmp_devices.csv)')
+    parser.add_argument("--output-conf", default="../config/prometheus/prometheus.yml", help='Output file for Prometheus configuration (default: ../config/prometheus/prometheus.yml)')
+    parser.add_argument("--output-hosts", default="../config/node-map/snmp_devices.csv", help='Output file for node-map SNMP info (default: ../config/node-map/snmp_devices.csv)')
+    parser.add_argument("--mibdir", default=(os.getcwd() + "/mibs"), help='Directory to find SNMPv2-MIB in (default: ./mibs)')
 
     args = parser.parse_args()
+
+    # Set SNMP MIB directory
+    snimpy.mib.path(args.mibdir + ":" + snimpy.mib.path())
+    print(f"MIBDIRS = {snimpy.mib.path()}")
 
     network = args.network or get_local_network()
     hosts   = scan(network, args.community, args.version)
     cfg     = build_prometheus_config(hosts, args.auth)
     
+    # Warn if the script doesn't find any SNMP hosts at all
     if len(hosts) == 0:
         print("Warning: No SNMP hosts found")
 
     print(f"{len(hosts)} SNMP host(s)")
 
     try:
+		# Write out prometheus configuration file
         conf_out = os.path.join(args.output_conf)
         os.makedirs(os.path.dirname(conf_out), exist_ok=True)
         with open(conf_out, "w") as f:
             yaml.dump(cfg, f, default_flow_style=False, sort_keys=False)        
         print(f"Wrote {conf_out}")
 
+        # Write out SNMP device information for node map
         nodemap_out = os.path.join(args.output_hosts)
         os.makedirs(os.path.dirname(nodemap_out), exist_ok=True)
         with open(nodemap_out, "w", newline="") as f:
@@ -190,11 +208,12 @@ def main():
                 writer.writerow([h["ip"], "161", args.community])
         print(f"Wrote {nodemap_out}")
 
+    # Fail nicely if writing does not work
     except Exception as e:
         print("ERROR: File output failed")
         print(e)
         exit(1)
 
-
+# Entry point
 if __name__ == "__main__":
     main()
