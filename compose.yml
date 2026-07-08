@@ -7,8 +7,21 @@ services:
         dockerfile: dockerfile
     container_name: node-map
     network_mode: host
-    volumes: [./config/node-map:/node-map]
+    volumes: [./node-map:/node-map]
 
+  csv-server:
+    image: python:3.11-slim
+    container_name: csv-server
+    restart: unless-stopped
+    networks:
+    - back-end
+    volumes:
+    - ./node-map:/node-map
+    command: sh -c "cd /node-map/NodeGraphCSV/Current && python3 -m http.server 6999 --bind 0.0.0.0"
+    depends_on:
+      node-map:
+        condition: service_started
+    
   grafana:
     image: grafana/grafana:latest
     container_name: grafana
