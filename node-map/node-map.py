@@ -13,8 +13,7 @@ cisco_ooids = [
 ]
 # SNMP Devices
 snmp_devices = [
-    ["192.168.10.1","161","public"],
-    ["192.168.20.1","161","public"]
+    ["172.16.156.1","161","public"]
 ]
 
 def get_snmp_info(device,ooid):

@@ -99,3 +99,7 @@ config/grafana/lib/grafana.db
 
 # Logging
 logs/
+
+#Node Map
+node-map/NodeGraphCSV/Backups
+node-map/NodeGraphCSV/Current
