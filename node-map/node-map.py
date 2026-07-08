@@ -113,7 +113,7 @@ def conversion_gafana(arptable,edges,routerips):
                         for node in data:
                             if node[2] == router[0]:
                                 node2 = node[0]
-        data1.append([index, node1, node2,"","", 1 , "", "black"])
+        data1.append([index, node1, node2,"","", 1 , "", "orange"])
 
     filename_node_backup = datetime.now().strftime("node_data_%Y-%m-%d_%H-%M-%S.csv")
     filename_nodes = "nodes.csv"
