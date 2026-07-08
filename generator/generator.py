@@ -42,9 +42,14 @@ VENDOR_PROFILES = {
 		"extra_modules": ["bridge_mib", "q_bridge_mib", "p_bridge_mib"],
 		"keywords": ["dlink", "d-link", "des", "dgs"],
     },
+    "mikrotik": {
+        "label": "mikrotik",
+        "extra_modules": ["bridge_mib", "mikrotik_mib"],
+        "keywords": ["mikrotik", "routeros"]
+    },
 }
 
-# Cisco and D-Link are identified by the presence of the MIB trees
+# Cisco, Mikrotik, and D-Link are identified by the presence of the MIB trees
 # associated with them
 # OpenWRT is identified by Net-SNMP's MIB tree, which shouldn't lead to
 # false positives so long as sysDescr detection is functioning
@@ -52,6 +57,7 @@ SYSOID_VENDOR_MAP = {
     ".1.3.6.1.4.1.9.":     "cisco",
     ".1.3.6.1.4.1.8072.":  "openwrt",
     ".1.3.6.1.4.1.171.":   "dlink",
+    ".1.3.6.1.4.1.14988":  "mikrotik",
 }
 
 # This gets the default IPv4 address and guesses a /24 network based on that
