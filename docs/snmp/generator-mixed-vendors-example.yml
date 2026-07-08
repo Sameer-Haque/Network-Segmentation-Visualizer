@@ -1,0 +1,339 @@
+---
+auths:
+  public_v1:
+    version: 1
+  public_v2:
+    version: 2
+
+modules:
+  
+  # SNMPv2-MIB for things like sysDescr, sysUpTime, etc.
+  system:
+    walk:
+      - "SNMPv2-MIB::system"
+    lookups:
+      - source_indexes: [sysORIndex]
+        lookup: "SNMPv2-MIB::sysORDescr"
+  
+  # Default IF-MIB interfaces table with ifIndex.
+  if_mib:
+    walk:
+      - "IF-MIB::interfaces"
+      - "IF-MIB::ifXTable"
+    lookups:
+      - source_indexes: [ifIndex]
+        lookup: "IF-MIB::ifAlias"
+      - source_indexes: [ifIndex]
+        # Disambiguate from PaloAlto PAN-COMMON-MIB::ifDescr.
+        lookup: "IF-MIB::ifDescr"
+      - source_indexes: [ifIndex]
+        # Disambiguate from Netscaler NS-ROOT-MIB::ifName.
+        lookup: "IF-MIB::ifName"
+    overrides:
+      ifAlias:
+        ignore: true # Lookup metric
+      ifDescr:
+        ignore: true # Lookup metric
+      ifName:
+        ignore: true # Lookup metric
+      ifType:
+        type: EnumAsInfo
+  
+  # IP-MIB with ipAddressTable.
+  ip_mib:
+    walk:
+      - "IP-MIB::ipAddressTable"
+      - "IP-MIB::ipNetToPhysicalTable"
+    lookups:
+      - source_indexes: [ipAddressAddr]
+        lookup: "IP-MIB::ipAddressAddrType"
+    overrides:
+      ipAddressAddrType:
+        ignore: true # Lookup metric
+  
+  # IP-FORWARD-MIB with ipCidrRouteTable.
+  ip_forward_mib:
+    walk:
+      - "IP-FORWARD-MIB::ipCidrRouteTable"
+    lookups:
+      - source_indexes: [ipCidrRouteDest]
+        lookup: "IP-FORWARD-MIB::ipCidrRouteType"
+    overrides:
+      ipCidrRouteType:
+        ignore: true # Lookup metric
+
+# UCD-SNMP-MIB
+#
+# University of California, Davis extensions. Commonly used for host
+# metrics. For example, Linux-based systems, DD-WRT, Synology,
+# Mikrotik, Kemp LoadMaster, etc.
+#
+# http://www.net-snmp.org/docs/mibs/UCD-SNMP-MIB.txt
+#
+  ucd_la_table:
+    walk:
+      - 1.3.6.1.4.1.2021.10.1.2 # laNames
+      - 1.3.6.1.4.1.2021.10.1.5 # laLoadInt
+      - 1.3.6.1.4.1.2021.10.1.6 # laLoadFloat
+    lookups:
+      - source_indexes: [laIndex]
+        lookup: laNames
+        drop_source_indexes: true
+  ucd_memory:
+    walk:
+      - 1.3.6.1.4.1.2021.4 # memory
+  ucd_system_stats:
+    walk:
+      - 1.3.6.1.4.1.2021.11 # systemStats
+
+#
+# HOST-RESOURCES-MIB
+#
+# http://www.net-snmp.org/docs/mibs/host.html
+  hrSystem:
+    walk:
+      - "HOST-RESOURCES-MIB::hrSystem"
+  
+  hrStorage:
+    walk:
+      - "HOST-RESOURCES-MIB::hrStorage"
+    lookups:
+      - source_indexes: [hrStorageIndex]
+        lookup: "HOST-RESOURCES-MIB::hrStorageDescr"
+      - source_indexes: [hrStorageIndex]
+        lookup: "HOST-RESOURCES-MIB::hrStorageType"
+    overrides:
+      hrStorageIndex:
+        ignore: true
+      hrStorageType:
+        ignore: true
+      hrStorageDescr:
+        ignore: true
+  
+  hrDevice:
+    walk:
+      - "HOST-RESOURCES-MIB::hrDevice"
+    lookups:
+      - source_indexes: [hrDeviceIndex]
+        lookup: "HOST-RESOURCES-MIB::hrDeviceDescr"
+      - source_indexes: [hrDeviceIndex]
+        lookup: "HOST-RESOURCES-MIB::hrDeviceType"
+    overrides:
+      # Remap enums where 1==true, 2==false to become 0==false, 1==true.
+      hrDiskStorageRemoveble:
+        scale: -1.0
+        offset: 2.0
+      hrPrinterStatus:
+        type: EnumAsStateSet
+      hrDeviceIndex:
+        ignore: true
+      hrDeviceType:
+        ignore: true
+      hrDeviceDescr:
+        ignore: true
+      hrProcessorFrwID:
+        ignore: true
+
+  ## BRIDGE-MIB modules ##
+
+  bridge_mib:
+    walk:
+      - "BRIDGE-MIB::dot1dBridge"     # Base bridge info
+      - "BRIDGE-MIB::dot1dTp"         # Transparent bridging / MAC table
+      - "BRIDGE-MIB::dot1dStp"        # Spanning tree state
+    lookups:
+      - source_indexes: [dot1dTpFdbAddress]
+        lookup: "BRIDGE-MIB::dot1dTpFdbPort"
+      - source_indexes: [dot1dTpFdbAddress]
+        lookup: "BRIDGE-MIB::dot1dTpFdbStatus"
+    overrides:
+      dot1dTpFdbStatus:
+        type: EnumAsStateSet
+        
+  q_bridge_mib:
+    walk:
+      - "Q-BRIDGE-MIB::dot1qBase"
+      - "Q-BRIDGE-MIB::dot1qTp"
+      - "Q-BRIDGE-MIB::dot1qStatic"
+      - "Q-BRIDGE-MIB::dot1qVlan"
+    lookups:
+      - source_indexes: [dot1qTpFdbAddress]
+        lookup: "Q-BRIDGE-MIB::dot1qTpFdbPort"
+      - source_indexes: [dot1qTpFdbAddress]
+        lookup: "Q-BRIDGE-MIB::dot1qTpFdbStatus"
+    overrides:
+      dot1qTpFdbStatus:
+        type: EnumAsStateSet
+
+  p_bridge_mib:
+    walk:
+      - "P-BRIDGE-MIB::dot1dExtBase"
+      - "P-BRIDGE-MIB::dot1dPriority"
+      - "P-BRIDGE-MIB::dot1dGarp"
+      - "P-BRIDGE-MIB::dot1dGmrp"
+
+  # CISCO-PROCESS-MIB — per-process and aggregate CPU utilization #
+  # OID: 1.3.6.1.4.1.9.9.109 #
+
+  cisco_cpu:
+    walk:
+      - 1.3.6.1.4.1.9.9.109.1.1.1    # cpmCPUTotalTable (aggregate CPU %)
+      - 1.3.6.1.4.1.9.9.109.1.2.1    # cpmProcessTable (per-process CPU)
+    lookups:
+      - source_indexes: [cpmCPUTotalIndex]
+        lookup: 1.3.6.1.4.1.9.9.109.1.1.1.1.2  # cpmCPUTotalPhysicalIndex
+
+  # CISCO-MEMORY-POOL-MIB — memory pool utilization #
+  # OID: 1.3.6.1.4.1.9.9.48 #
+  # Reports used/free/largest-free per memory pool #
+
+  cisco_memory:
+    walk:
+      - 1.3.6.1.4.1.9.9.48.1.1       # ciscoMemoryPoolTable
+    lookups:
+      - source_indexes: [ciscoMemoryPoolType]
+        lookup: 1.3.6.1.4.1.9.9.48.1.1.1.2  # ciscoMemoryPoolName
+
+  # CISCO-IF-EXTENSION-MIB — extended interface statistics #
+  # OID: 1.3.6.1.4.1.9.9.276 #
+  # Adds per-interface input/output rate, reset counters, and speed info #
+
+  cisco_if_extension:
+    walk:
+      - 1.3.6.1.4.1.9.9.276.1.1.2    # cieIfPacketStatsTable
+      - 1.3.6.1.4.1.9.9.276.1.2.1    # cieIfInterfaceTable
+    lookups:
+      - source_indexes: [ifIndex]
+        lookup: "IF-MIB::ifDescr"
+      - source_indexes: [ifIndex]
+        lookup: "IF-MIB::ifName"
+    overrides:
+      ifDescr:
+        ignore: true
+      ifName:
+        ignore: true
+
+  # CISCO-ENVMON-MIB — environmental monitoring #
+  # OID: 1.3.6.1.4.1.9.9.13 #
+  # Covers temperature sensors, fan status, voltage, power supply state. #
+
+  cisco_envmon:
+    walk:
+      - 1.3.6.1.4.1.9.9.13.1.2       # ciscoEnvMonTemperatureStatusTable #
+      - 1.3.6.1.4.1.9.9.13.1.3       # ciscoEnvMonVoltageStatusTable #
+      - 1.3.6.1.4.1.9.9.13.1.4       # ciscoEnvMonFanStatusTable #
+      - 1.3.6.1.4.1.9.9.13.1.5       # ciscoEnvMonSupplyStatusTable #
+    lookups:
+      - source_indexes: [ciscoEnvMonTemperatureStatusIndex]
+        lookup: 1.3.6.1.4.1.9.9.13.1.2.1.2   # ciscoEnvMonTemperatureStatusDescr
+      - source_indexes: [ciscoEnvMonFanStatusIndex]
+        lookup: 1.3.6.1.4.1.9.9.13.1.4.1.2   # ciscoEnvMonFanStatusDescr
+      - source_indexes: [ciscoEnvMonSupplyStatusIndex]
+        lookup: 1.3.6.1.4.1.9.9.13.1.5.1.2   # ciscoEnvMonSupplyStatusDescr
+    overrides:
+      ciscoEnvMonTemperatureState:
+        type: EnumAsStateSet
+      ciscoEnvMonFanState:
+        type: EnumAsStateSet
+      ciscoEnvMonSupplyState:
+        type: EnumAsStateSet
+
+  # ENTITY-MIB — physical inventory #
+  # OID: 1.3.6.1.2.1.47 #
+
+  entity_mib:
+    walk:
+      - 1.3.6.1.2.1.47.1.1.1         # entPhysicalTable
+    lookups:
+      - source_indexes: [entPhysicalIndex]
+        lookup: 1.3.6.1.2.1.47.1.1.1.1.7   # entPhysicalName
+      - source_indexes: [entPhysicalIndex]
+        lookup: 1.3.6.1.2.1.47.1.1.1.1.2   # entPhysicalDescr
+    overrides:
+      entPhysicalClass:
+        type: EnumAsInfo
+      entPhysicalName:
+        ignore: true
+      entPhysicalDescr:
+        ignore: true
+
+  # CISCO-CDP-MIB — CDP neighbour discovery #
+  # OID: 1.3.6.1.4.1.9.9.23 #
+  # Reports directly connected Cisco neighbours: device ID, IP, port, platform. #
+  # CDP must be enabled on the device (enabled by default on IOS). #
+
+  cisco_cdp:
+    walk:
+      - 1.3.6.1.4.1.9.9.23.1.2.1     # cdpCacheTable
+    lookups:
+      - source_indexes: [cdpCacheIfIndex, cdpCacheDeviceIndex]
+        lookup: 1.3.6.1.4.1.9.9.23.1.2.1.1.6   # cdpCacheDeviceId
+      - source_indexes: [cdpCacheIfIndex, cdpCacheDeviceIndex]
+        lookup: 1.3.6.1.4.1.9.9.23.1.2.1.1.4   # cdpCacheAddress (neighbour IP)
+      - source_indexes: [cdpCacheIfIndex, cdpCacheDeviceIndex]
+        lookup: 1.3.6.1.4.1.9.9.23.1.2.1.1.7   # cdpCachePortId (neighbour port)
+      - source_indexes: [cdpCacheIfIndex, cdpCacheDeviceIndex]
+        lookup: 1.3.6.1.4.1.9.9.23.1.2.1.1.8   # cdpCachePlatform
+
+  # CISCO-VTP-MIB — VLAN Trunking Protocol / VLAN table #
+  # OID: 1.3.6.1.4.1.9.9.46 #
+  # Reports VLAN names, states, and port membership. #
+  #!!!Only meaningful on switches; routers will return empty tables.!!!#
+
+  cisco_vtp:
+    walk:
+      - 1.3.6.1.4.1.9.9.46.1.3.1     # vtpVlanTable (VLAN name, state, type)
+      - 1.3.6.1.4.1.9.9.46.1.4.1     # vlanTrunkPortTable (trunk port VLAN membership)
+    lookups:
+      - source_indexes: [managementDomainIndex, vtpVlanIndex]
+        lookup: 1.3.6.1.4.1.9.9.46.1.3.1.1.4   # vtpVlanName
+    overrides:
+      vtpVlanState:
+        type: EnumAsStateSet
+      vtpVlanType:
+        type: EnumAsInfo
+
+  # Mikrotik Router
+  #
+  # http://download2.mikrotik.com/Mikrotik.mib
+  mikrotik_mib:
+    walk:
+      - "MIKROTIK-MIB::mikrotik"
+    lookups:
+      - source_indexes: [ifIndex]
+        lookup: ifName
+      - source_indexes: [mtxrInterfaceStatsIndex]
+        lookup: ifName
+      - source_indexes: [mtxrGaugeIndex]
+        lookup: mtxrGaugeName
+        drop_source_indexes: true
+      - source_indexes: [mtxrNeighborIndex]
+        lookup: mtxrNeighborMacAddress
+        drop_source_indexes: true
+      - source_indexes: [mtxrNeighborIndex]
+        lookup: mtxrNeighborInterfaceID
+      - source_indexes: [mtxrNeighborInterfaceID]
+        lookup: ifName
+        drop_source_indexes: true
+      - source_indexes: [mtxrOpticalIndex]
+        lookup: mtxrOpticalName
+      - source_indexes: [mtxrPOEInterfaceIndex]
+        lookup: mtxrPOEName
+      - source_indexes: [mtxrPartitionIndex]
+        lookup: mtxrPartitionName
+      - source_indexes: [mtxrRemoteCapId]
+        lookup: mtxrRemoteCapIdentity
+        drop_source_indexes: true
+      - source_indexes: [mtxrWifiInterfacesId]
+        lookup: ifName
+        drop_source_indexes: true
+      - source_indexes: [mtxrWifiRegistrationInterface]
+        lookup: ifName
+        drop_source_indexes: true
+    overrides:
+      mtxrRemoteCapIdentity:
+        ignore: true # information is redundant
+      mtxrWifiInterfacesName:
+        ignore: true # information is redundant
+      mtxrWifiRegistrationMacAddress:
+        ignore: true # information is redundant
