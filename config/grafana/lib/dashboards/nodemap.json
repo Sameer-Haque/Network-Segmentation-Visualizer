@@ -1,0 +1,197 @@
+{
+  "apiVersion": "dashboard.grafana.app/v2",
+  "kind": "Dashboard",
+  "metadata": {
+    "name": "ad7tnvf",
+    "namespace": "default",
+    "uid": "b62114a3-f1b1-4128-bb3b-c8df8409e13b",
+    "resourceVersion": "1783530596159000",
+    "generation": 1,
+    "creationTimestamp": "2026-07-08T17:09:56Z",
+    "labels": {
+      "grafana.app/deprecatedInternalID": "3031466304868352"
+    },
+    "annotations": {
+      "grafana.app/createdBy": "user:cfrg0odqchpmoa",
+      "grafana.app/folder": "",
+      "grafana.app/saved-from-ui": "Grafana v13.1.0 (b309c9bb3b)"
+    }
+  },
+  "spec": {
+    "annotations": [
+      {
+        "kind": "AnnotationQuery",
+        "spec": {
+          "query": {
+            "kind": "DataQuery",
+            "group": "grafana",
+            "version": "v0",
+            "datasource": {
+              "name": "-- Grafana --"
+            },
+            "spec": {}
+          },
+          "enable": true,
+          "hide": true,
+          "iconColor": "rgba(0, 211, 255, 1)",
+          "name": "Annotations & Alerts",
+          "builtIn": true
+        }
+      }
+    ],
+    "cursorSync": "Off",
+    "description": "",
+    "editable": true,
+    "elements": {
+      "panel-1": {
+        "kind": "Panel",
+        "spec": {
+          "id": 1,
+          "title": "Node Map",
+          "description": "",
+          "links": [],
+          "data": {
+            "kind": "QueryGroup",
+            "spec": {
+              "queries": [
+                {
+                  "kind": "PanelQuery",
+                  "spec": {
+                    "query": {
+                      "kind": "DataQuery",
+                      "group": "yesoreyeram-infinity-datasource",
+                      "version": "v0",
+                      "datasource": {
+                        "name": "PD0067CAD9A63E081"
+                      },
+                      "spec": {
+                        "columns": [],
+                        "filters": [],
+                        "format": "node-graph-nodes",
+                        "global_query_id": "",
+                        "parser": "backend",
+                        "root_selector": "",
+                        "source": "url",
+                        "type": "csv",
+                        "url": "http://csv-server:6999/nodes.csv",
+                        "url_options": {
+                          "data": "",
+                          "method": "GET"
+                        }
+                      }
+                    },
+                    "refId": "A",
+                    "hidden": false
+                  }
+                },
+                {
+                  "kind": "PanelQuery",
+                  "spec": {
+                    "query": {
+                      "kind": "DataQuery",
+                      "group": "yesoreyeram-infinity-datasource",
+                      "version": "v0",
+                      "datasource": {
+                        "name": "PD0067CAD9A63E081"
+                      },
+                      "spec": {
+                        "columns": [],
+                        "filters": [],
+                        "format": "node-graph-edges",
+                        "global_query_id": "",
+                        "parser": "backend",
+                        "root_selector": "",
+                        "source": "url",
+                        "type": "csv",
+                        "url": "http://csv-server:6999/edges.csv",
+                        "url_options": {
+                          "data": "",
+                          "method": "GET"
+                        }
+                      }
+                    },
+                    "refId": "B",
+                    "hidden": false
+                  }
+                }
+              ],
+              "transformations": [],
+              "queryOptions": {}
+            }
+          },
+          "vizConfig": {
+            "kind": "VizConfig",
+            "group": "nodeGraph",
+            "version": "13.1.0",
+            "spec": {
+              "options": {
+                "edges": {},
+                "layoutAlgorithm": "layered",
+                "nodes": {},
+                "zoomMode": "cooperative"
+              },
+              "fieldConfig": {
+                "defaults": {},
+                "overrides": []
+              }
+            }
+          }
+        }
+      }
+    },
+    "layout": {
+      "kind": "GridLayout",
+      "spec": {
+        "items": [
+          {
+            "kind": "GridLayoutItem",
+            "spec": {
+              "x": 0,
+              "y": 0,
+              "width": 24,
+              "height": 19,
+              "element": {
+                "kind": "ElementReference",
+                "name": "panel-1"
+              }
+            }
+          }
+        ]
+      }
+    },
+    "links": [],
+    "liveNow": false,
+    "preload": false,
+    "tags": [],
+    "timeSettings": {
+      "timezone": "browser",
+      "from": "now-6h",
+      "to": "now",
+      "autoRefresh": "1m",
+      "autoRefreshIntervals": [
+        "5s",
+        "10s",
+        "30s",
+        "1m",
+        "5m",
+        "15m",
+        "30m",
+        "1h",
+        "2h",
+        "1d"
+      ],
+      "hideTimepicker": false,
+      "fiscalYearStartMonth": 0
+    },
+    "title": "Node Map",
+    "variables": [],
+    "preferences": {
+      "layout": {
+        "kind": "GridLayout",
+        "spec": {
+          "items": []
+        }
+      }
+    }
+  }
+}
