@@ -1,12 +1,12 @@
 apiVersion: 1
 groups:
     - orgId: 1
-      name: NetFlow Alerts
-      folder: NetFlow Alerts
+      name: Security Alerts
+      folder: Visualizer - NetFlow
       interval: 5m
       rules:
-        - uid: ffqiocsmhqtc0a
-          title: Telnet test alert
+        - uid: ffrm7f5tym03kc
+          title: Unusual UDP Traffic Port
           condition: C
           data:
             - refId: A
@@ -26,7 +26,14 @@ groups:
                 editorMode: sql
                 extrapolate: true
                 format: table
-                formattedQuery: SELECT $timeSeries as t, count() FROM $table WHERE $timeFilter GROUP BY t ORDER BY t
+                formattedQuery: |-
+                    SELECT
+                        time_flow_start_ns AS time,
+                        sum(bytes*sampling_rate) AS sumbytes
+                    FROM $table
+                    WHERE $timeFilter AND proto = 17 AND src_port BETWEEN 0 AND 1023 AND toString(src_port) NOT IN ('53', '123', '137', '138', '161', '192', '443', '500', '554', '749', '995')
+                    GROUP BY time,
+                    ORDER BY sumbytes DESC
                 interval: ""
                 intervalFactor: 1
                 intervalMs: 1000
@@ -37,7 +44,7 @@ groups:
                         time_flow_start_ns AS time,
                         sum(bytes*sampling_rate) AS sumbytes
                     FROM $table
-                    WHERE $timeFilter AND toString(src_port) = '23'
+                    WHERE $timeFilter AND proto = 17 AND src_port BETWEEN 0 AND 1023 AND toString(src_port) NOT IN ('53', '123', '137', '138', '161', '192', '443', '500', '554', '749', '995')
                     GROUP BY time
                     ORDER BY sumbytes DESC
                 refId: A
@@ -59,7 +66,7 @@ groups:
                             - B
                       reducer:
                         params: []
-                        type: last
+                        type: count
                       type: query
                 datasource:
                     type: __expr__
@@ -67,7 +74,7 @@ groups:
                 expression: A
                 intervalMs: 1000
                 maxDataPoints: 43200
-                reducer: last
+                reducer: count
                 refId: B
                 type: reduce
             - refId: C
@@ -97,10 +104,853 @@ groups:
                 type: threshold
           noDataState: OK
           execErrState: Error
-          for: 0m
           annotations:
-            description: This alert is triggered if traffic is detected on TCP or UDP port 23 in Netflow.
-            summary: Traffic on the port reserved for Telnet was detected.
+            description: 'This alert is triggered if traffic is detected on any UDP port between 0 and 1023 in Netflow that is not in the following list: ''53'', ''123'', ''137'', ''138'', ''161'', ''192'', ''443'', ''500'', ''554'', ''749'', ''995'''
+            summary: Traffic on a typically unused system UDP port (0-1023) detected.
+          isPaused: false
+          notification_settings:
+            receiver: example-test-email
+        - uid: cfrm91xgfng1sb
+          title: Unusual TCP Traffic Port
+          condition: C
+          data:
+            - refId: A
+              relativeTimeRange:
+                from: 300
+                to: 0
+              datasourceUid: PDEE91DDB90597936
+              model:
+                adHocFilters: []
+                adHocValuesQuery: ""
+                add_metadata: true
+                contextWindowSize: "10"
+                database: default
+                dateColDataType: date
+                dateTimeColDataType: time_flow_start_ns
+                dateTimeType: DATETIME64
+                editorMode: sql
+                extrapolate: true
+                format: table
+                formattedQuery: |-
+                    SELECT
+                        time_flow_start_ns AS time,
+                        sum(bytes*sampling_rate) AS sumbytes
+                    FROM $table
+                    WHERE $timeFilter AND proto = 6 AND src_port BETWEEN 0 AND 1023 AND toString(src_port) NOT IN ('22', '25', '53', '80', '88', '110', '139', '143', '389', '443', '445', '465', '515', '548', '554', '587', '631', '636', '749', '993', '995')
+                    GROUP BY time,
+                    ORDER BY sumbytes DESC
+                interval: ""
+                intervalFactor: 1
+                intervalMs: 1000
+                maxDataPoints: 43200
+                nullifySparse: false
+                query: |-
+                    SELECT
+                        time_flow_start_ns AS time,
+                        sum(bytes*sampling_rate) AS sumbytes
+                    FROM $table
+                    WHERE $timeFilter AND proto = 6 AND src_port BETWEEN 0 AND 1023 AND toString(src_port) NOT IN ('22', '25', '53', '80', '88', '110', '139', '143', '389', '443', '445', '465', '515', '548', '554', '587', '631', '636', '749', '993', '995')
+                    GROUP BY time
+                    ORDER BY sumbytes DESC
+                refId: A
+                round: 0s
+                skip_comments: true
+                table: flows_raw
+                useWindowFuncForMacros: true
+            - refId: B
+              datasourceUid: __expr__
+              model:
+                conditions:
+                    - evaluator:
+                        params: []
+                        type: gt
+                      operator:
+                        type: and
+                      query:
+                        params:
+                            - B
+                      reducer:
+                        params: []
+                        type: count
+                      type: query
+                datasource:
+                    type: __expr__
+                    uid: __expr__
+                expression: A
+                intervalMs: 1000
+                maxDataPoints: 43200
+                reducer: count
+                refId: B
+                type: reduce
+            - refId: C
+              datasourceUid: __expr__
+              model:
+                conditions:
+                    - evaluator:
+                        params:
+                            - 0
+                        type: gt
+                      operator:
+                        type: and
+                      query:
+                        params:
+                            - C
+                      reducer:
+                        params: []
+                        type: last
+                      type: query
+                datasource:
+                    type: __expr__
+                    uid: __expr__
+                expression: B
+                intervalMs: 1000
+                maxDataPoints: 43200
+                refId: C
+                type: threshold
+          noDataState: OK
+          execErrState: Error
+          annotations:
+            description: 'This alert is triggered if traffic is detected on any TCP port between 0 and 1023 in Netflow that is not in the following list: ''22'', ''25'', ''53'', ''80'', ''88'', ''110'', ''139'', ''143'', ''389'', ''443'', ''445'', ''465'', ''515'', ''548'', ''554'', ''587'', ''631'', ''636'', ''749'', ''993'', ''995'''
+            summary: Traffic on a typically unused system TCP port (0-1023) detected.
+          isPaused: false
+          notification_settings:
+            receiver: example-test-email
+        - uid: ffrmd6it5iqkgb
+          title: Unusual Transport Protocol
+          condition: C
+          data:
+            - refId: A
+              relativeTimeRange:
+                from: 300
+                to: 0
+              datasourceUid: PDEE91DDB90597936
+              model:
+                adHocFilters: []
+                adHocValuesQuery: ""
+                add_metadata: true
+                contextWindowSize: "10"
+                database: default
+                dateColDataType: date
+                dateTimeColDataType: time_flow_start_ns
+                dateTimeType: DATETIME64
+                editorMode: sql
+                extrapolate: true
+                format: table
+                formattedQuery: |-
+                    WITH dictGetString('dictionaries.protocols', 'name', toUInt64(proto)) AS protoName
+                    SELECT
+                        time_flow_start_ns AS time,
+                        sum(bytes*sampling_rate) AS sumbytes,
+                        if(protoName = '', toString(proto), protoName) AS transportproto
+                    FROM $table
+                    WHERE $timeFilter AND toString(proto) NOT IN ('1', '2', '6', '17', '41', '43', '44', '47', '58', '59', '60', '88', '112',)
+                    GROUP BY time, transportproto
+                    ORDER BY sumbytes DESC
+                interval: ""
+                intervalFactor: 1
+                intervalMs: 1000
+                maxDataPoints: 43200
+                nullifySparse: false
+                query: |-
+                    WITH dictGetString('dictionaries.protocols', 'name', toUInt64(proto)) AS protoName
+                    SELECT
+                        time_flow_start_ns AS time,
+                        sum(bytes*sampling_rate) AS sumbytes,
+                        if(protoName = '', toString(proto), protoName) AS transportproto
+                    FROM $table
+                    WHERE $timeFilter AND toString(proto) NOT IN ('1', '2', '6', '17', '41', '43', '44', '47', '58', '59', '60', '88', '112')
+                    GROUP BY time, transportproto
+                    ORDER BY sumbytes DESC
+                refId: A
+                round: 0s
+                skip_comments: true
+                table: flows_raw
+                useWindowFuncForMacros: true
+            - refId: B
+              datasourceUid: __expr__
+              model:
+                conditions:
+                    - evaluator:
+                        params: []
+                        type: gt
+                      operator:
+                        type: and
+                      query:
+                        params:
+                            - B
+                      reducer:
+                        params: []
+                        type: count
+                      type: query
+                datasource:
+                    type: __expr__
+                    uid: __expr__
+                expression: A
+                intervalMs: 1000
+                maxDataPoints: 43200
+                reducer: count
+                refId: B
+                type: reduce
+            - refId: C
+              datasourceUid: __expr__
+              model:
+                conditions:
+                    - evaluator:
+                        params:
+                            - 0
+                        type: gt
+                      operator:
+                        type: and
+                      query:
+                        params:
+                            - C
+                      reducer:
+                        params: []
+                        type: last
+                      type: query
+                datasource:
+                    type: __expr__
+                    uid: __expr__
+                expression: B
+                intervalMs: 1000
+                maxDataPoints: 43200
+                refId: C
+                type: threshold
+          noDataState: OK
+          execErrState: Error
+          annotations:
+            description: 'This alert is triggered if traffic is detected on any transport protocol in Netflow that is not in the following list: ''1'', ''2'', ''6'', ''17'', ''41'', ''43'', ''44'', ''47'', ''58'', ''59'', ''60'', ''88'', ''112'''
+            summary: Traffic on a typically unused transport protocol detected.
+          isPaused: false
+          notification_settings:
+            receiver: example-test-email
+        - uid: bfrmmgu2lvcw0c
+          title: Telnet Traffic
+          condition: C
+          data:
+            - refId: A
+              relativeTimeRange:
+                from: 300
+                to: 0
+              datasourceUid: PDEE91DDB90597936
+              model:
+                adHocFilters: []
+                adHocValuesQuery: ""
+                add_metadata: true
+                contextWindowSize: "10"
+                database: default
+                dateColDataType: date
+                dateTimeColDataType: time_flow_start_ns
+                dateTimeType: DATETIME64
+                editorMode: sql
+                extrapolate: true
+                format: table
+                formattedQuery: |-
+                    SELECT
+                        time_flow_start_ns AS time,
+                        sum(bytes*sampling_rate) AS sumbytes
+                    FROM $table
+                    WHERE $timeFilter AND proto IN (6, 1) AND src_port = 23
+                    GROUP BY time
+                    ORDER BY sumbytes DESC
+                interval: ""
+                intervalFactor: 1
+                intervalMs: 1000
+                maxDataPoints: 43200
+                nullifySparse: false
+                query: |-
+                    SELECT
+                        time_flow_start_ns AS time,
+                        sum(bytes*sampling_rate) AS sumbytes
+                    FROM $table
+                    WHERE $timeFilter AND proto IN (6, 17) AND src_port = 23
+                    GROUP BY time
+                    ORDER BY sumbytes DESC
+                refId: A
+                round: 0s
+                skip_comments: true
+                table: flows_raw
+                useWindowFuncForMacros: true
+            - refId: B
+              datasourceUid: __expr__
+              model:
+                conditions:
+                    - evaluator:
+                        params: []
+                        type: gt
+                      operator:
+                        type: and
+                      query:
+                        params:
+                            - B
+                      reducer:
+                        params: []
+                        type: count
+                      type: query
+                datasource:
+                    type: __expr__
+                    uid: __expr__
+                expression: A
+                intervalMs: 1000
+                maxDataPoints: 43200
+                reducer: count
+                refId: B
+                type: reduce
+            - refId: C
+              datasourceUid: __expr__
+              model:
+                conditions:
+                    - evaluator:
+                        params:
+                            - 0
+                        type: gt
+                      operator:
+                        type: and
+                      query:
+                        params:
+                            - C
+                      reducer:
+                        params: []
+                        type: last
+                      type: query
+                datasource:
+                    type: __expr__
+                    uid: __expr__
+                expression: B
+                intervalMs: 1000
+                maxDataPoints: 43200
+                refId: C
+                type: threshold
+          noDataState: OK
+          execErrState: Error
+          annotations:
+            description: This alert is triggered if traffic is detected on TCP or UDP port 23 in NetFlow. This port is associated with Telnet, a protocol with known security flaws.
+            summary: Traffic on Telnet server port detected.
+          isPaused: false
+          notification_settings:
+            receiver: example-test-email
+        - uid: efrmmtz8hybk0a
+          title: FTP Traffic
+          condition: C
+          data:
+            - refId: A
+              relativeTimeRange:
+                from: 300
+                to: 0
+              datasourceUid: PDEE91DDB90597936
+              model:
+                adHocFilters: []
+                adHocValuesQuery: ""
+                add_metadata: true
+                contextWindowSize: "10"
+                database: default
+                dateColDataType: date
+                dateTimeColDataType: time_flow_start_ns
+                dateTimeType: DATETIME64
+                editorMode: sql
+                extrapolate: true
+                format: table
+                formattedQuery: |-
+                    SELECT
+                        time_flow_start_ns AS time,
+                        sum(bytes*sampling_rate) AS sumbytes
+                    FROM $table
+                    WHERE $timeFilter AND proto IN (6, 17) AND src_port IN (20, 21, 11)
+                    GROUP BY time
+                    ORDER BY sumbytes DESC
+                interval: ""
+                intervalFactor: 1
+                intervalMs: 1000
+                maxDataPoints: 43200
+                nullifySparse: false
+                query: |-
+                    SELECT
+                        time_flow_start_ns AS time,
+                        sum(bytes*sampling_rate) AS sumbytes
+                    FROM $table
+                    WHERE $timeFilter AND proto IN (6, 17) AND src_port IN (20, 21, 115)
+                    GROUP BY time
+                    ORDER BY sumbytes DESC
+                refId: A
+                round: 0s
+                skip_comments: true
+                table: flows_raw
+                useWindowFuncForMacros: true
+            - refId: B
+              datasourceUid: __expr__
+              model:
+                conditions:
+                    - evaluator:
+                        params: []
+                        type: gt
+                      operator:
+                        type: and
+                      query:
+                        params:
+                            - B
+                      reducer:
+                        params: []
+                        type: count
+                      type: query
+                datasource:
+                    type: __expr__
+                    uid: __expr__
+                expression: A
+                intervalMs: 1000
+                maxDataPoints: 43200
+                reducer: count
+                refId: B
+                type: reduce
+            - refId: C
+              datasourceUid: __expr__
+              model:
+                conditions:
+                    - evaluator:
+                        params:
+                            - 0
+                        type: gt
+                      operator:
+                        type: and
+                      query:
+                        params:
+                            - C
+                      reducer:
+                        params: []
+                        type: last
+                      type: query
+                datasource:
+                    type: __expr__
+                    uid: __expr__
+                expression: B
+                intervalMs: 1000
+                maxDataPoints: 43200
+                refId: C
+                type: threshold
+          noDataState: OK
+          execErrState: Error
+          annotations:
+            description: This alert is triggered if traffic is detected on TCP or UDP ports 20, 21, or 115 in NetFlow. This port is associated with FTP, a protocol with known security flaws.
+            summary: Traffic on FTP server port detected.
+          isPaused: false
+          notification_settings:
+            receiver: example-test-email
+        - uid: efrmmxsz9vr40d
+          title: Finger Traffic
+          condition: C
+          data:
+            - refId: A
+              relativeTimeRange:
+                from: 300
+                to: 0
+              datasourceUid: PDEE91DDB90597936
+              model:
+                adHocFilters: []
+                adHocValuesQuery: ""
+                add_metadata: true
+                contextWindowSize: "10"
+                database: default
+                dateColDataType: date
+                dateTimeColDataType: time_flow_start_ns
+                dateTimeType: DATETIME64
+                editorMode: sql
+                extrapolate: true
+                format: table
+                formattedQuery: |-
+                    SELECT
+                        time_flow_start_ns AS time,
+                        sum(bytes*sampling_rate) AS sumbytes
+                    FROM $table
+                    WHERE $timeFilter AND proto IN (6, 17) AND src_port = 7
+                    GROUP BY time
+                    ORDER BY sumbytes DESC
+                interval: ""
+                intervalFactor: 1
+                intervalMs: 1000
+                maxDataPoints: 43200
+                nullifySparse: false
+                query: |-
+                    SELECT
+                        time_flow_start_ns AS time,
+                        sum(bytes*sampling_rate) AS sumbytes
+                    FROM $table
+                    WHERE $timeFilter AND proto IN (6, 17) AND src_port = 79
+                    GROUP BY time
+                    ORDER BY sumbytes DESC
+                refId: A
+                round: 0s
+                skip_comments: true
+                table: flows_raw
+                useWindowFuncForMacros: true
+            - refId: B
+              datasourceUid: __expr__
+              model:
+                conditions:
+                    - evaluator:
+                        params: []
+                        type: gt
+                      operator:
+                        type: and
+                      query:
+                        params:
+                            - B
+                      reducer:
+                        params: []
+                        type: count
+                      type: query
+                datasource:
+                    type: __expr__
+                    uid: __expr__
+                expression: A
+                intervalMs: 1000
+                maxDataPoints: 43200
+                reducer: count
+                refId: B
+                type: reduce
+            - refId: C
+              datasourceUid: __expr__
+              model:
+                conditions:
+                    - evaluator:
+                        params:
+                            - 0
+                        type: gt
+                      operator:
+                        type: and
+                      query:
+                        params:
+                            - C
+                      reducer:
+                        params: []
+                        type: last
+                      type: query
+                datasource:
+                    type: __expr__
+                    uid: __expr__
+                expression: B
+                intervalMs: 1000
+                maxDataPoints: 43200
+                refId: C
+                type: threshold
+          noDataState: OK
+          execErrState: Error
+          annotations:
+            description: This alert is triggered if traffic is detected on TCP or UDP ports 79 in NetFlow. This port is associated with Finger, a protocol with known security flaws.
+            summary: Traffic on Finger server port detected.
+          isPaused: false
+          notification_settings:
+            receiver: example-test-email
+        - uid: ffrmngn4lzshse
+          title: rlogin/Who Traffic
+          condition: C
+          data:
+            - refId: A
+              relativeTimeRange:
+                from: 300
+                to: 0
+              datasourceUid: PDEE91DDB90597936
+              model:
+                adHocFilters: []
+                adHocValuesQuery: ""
+                add_metadata: true
+                contextWindowSize: "10"
+                database: default
+                dateColDataType: date
+                dateTimeColDataType: time_flow_start_ns
+                dateTimeType: DATETIME64
+                editorMode: sql
+                extrapolate: true
+                format: table
+                formattedQuery: |-
+                    SELECT
+                        time_flow_start_ns AS time,
+                        sum(bytes*sampling_rate) AS sumbytes
+                    FROM $table
+                    WHERE $timeFilter AND proto IN (6, 17) AND src_port = 51
+                    GROUP BY time
+                    ORDER BY sumbytes DESC
+                interval: ""
+                intervalFactor: 1
+                intervalMs: 1000
+                maxDataPoints: 43200
+                nullifySparse: false
+                query: |-
+                    SELECT
+                        time_flow_start_ns AS time,
+                        sum(bytes*sampling_rate) AS sumbytes
+                    FROM $table
+                    WHERE $timeFilter AND proto IN (6, 17) AND src_port = 513
+                    GROUP BY time
+                    ORDER BY sumbytes DESC
+                refId: A
+                round: 0s
+                skip_comments: true
+                table: flows_raw
+                useWindowFuncForMacros: true
+            - refId: B
+              datasourceUid: __expr__
+              model:
+                conditions:
+                    - evaluator:
+                        params: []
+                        type: gt
+                      operator:
+                        type: and
+                      query:
+                        params:
+                            - B
+                      reducer:
+                        params: []
+                        type: count
+                      type: query
+                datasource:
+                    type: __expr__
+                    uid: __expr__
+                expression: A
+                intervalMs: 1000
+                maxDataPoints: 43200
+                reducer: count
+                refId: B
+                type: reduce
+            - refId: C
+              datasourceUid: __expr__
+              model:
+                conditions:
+                    - evaluator:
+                        params:
+                            - 0
+                        type: gt
+                      operator:
+                        type: and
+                      query:
+                        params:
+                            - C
+                      reducer:
+                        params: []
+                        type: last
+                      type: query
+                datasource:
+                    type: __expr__
+                    uid: __expr__
+                expression: B
+                intervalMs: 1000
+                maxDataPoints: 43200
+                refId: C
+                type: threshold
+          noDataState: OK
+          execErrState: Error
+          annotations:
+            description: This alert is triggered if traffic is detected on TCP or UDP ports 513 in NetFlow. These ports are associated with rlogin (TCP) and who (UDP), both protocols with known security flaws.
+            summary: Traffic on rlogin/who server port detected.
+          isPaused: false
+          notification_settings:
+            receiver: example-test-email
+        - uid: ffrmnknzf0jy8f
+          title: rsh Traffic
+          condition: C
+          data:
+            - refId: A
+              relativeTimeRange:
+                from: 300
+                to: 0
+              datasourceUid: PDEE91DDB90597936
+              model:
+                adHocFilters: []
+                adHocValuesQuery: ""
+                add_metadata: true
+                contextWindowSize: "10"
+                database: default
+                dateColDataType: date
+                dateTimeColDataType: time_flow_start_ns
+                dateTimeType: DATETIME64
+                editorMode: sql
+                extrapolate: true
+                format: table
+                formattedQuery: |-
+                    SELECT
+                        time_flow_start_ns AS time,
+                        sum(bytes*sampling_rate) AS sumbytes
+                    FROM $table
+                    WHERE $timeFilter AND proto  6 AND src_port = 514
+                    GROUP BY time
+                    ORDER BY sumbytes DESC
+                interval: ""
+                intervalFactor: 1
+                intervalMs: 1000
+                maxDataPoints: 43200
+                nullifySparse: false
+                query: |-
+                    SELECT
+                        time_flow_start_ns AS time,
+                        sum(bytes*sampling_rate) AS sumbytes
+                    FROM $table
+                    WHERE $timeFilter AND proto = 6 AND src_port = 514
+                    GROUP BY time
+                    ORDER BY sumbytes DESC
+                refId: A
+                round: 0s
+                skip_comments: true
+                table: flows_raw
+                useWindowFuncForMacros: true
+            - refId: B
+              datasourceUid: __expr__
+              model:
+                conditions:
+                    - evaluator:
+                        params: []
+                        type: gt
+                      operator:
+                        type: and
+                      query:
+                        params:
+                            - B
+                      reducer:
+                        params: []
+                        type: count
+                      type: query
+                datasource:
+                    type: __expr__
+                    uid: __expr__
+                expression: A
+                intervalMs: 1000
+                maxDataPoints: 43200
+                reducer: count
+                refId: B
+                type: reduce
+            - refId: C
+              datasourceUid: __expr__
+              model:
+                conditions:
+                    - evaluator:
+                        params:
+                            - 0
+                        type: gt
+                      operator:
+                        type: and
+                      query:
+                        params:
+                            - C
+                      reducer:
+                        params: []
+                        type: last
+                      type: query
+                datasource:
+                    type: __expr__
+                    uid: __expr__
+                expression: B
+                intervalMs: 1000
+                maxDataPoints: 43200
+                refId: C
+                type: threshold
+          noDataState: OK
+          execErrState: Error
+          annotations:
+            description: This alert is triggered if traffic is detected on TCP port 514 in NetFlow. This port is associated with rsh, a protocol with known security flaws.
+            summary: Traffic on rsh server port detected.
+          isPaused: false
+          notification_settings:
+            receiver: example-test-email
+        - uid: dfrmnq0jg8d1cf
+          title: Talk Traffic
+          condition: C
+          data:
+            - refId: A
+              relativeTimeRange:
+                from: 300
+                to: 0
+              datasourceUid: PDEE91DDB90597936
+              model:
+                adHocFilters: []
+                adHocValuesQuery: ""
+                add_metadata: true
+                contextWindowSize: "10"
+                database: default
+                dateColDataType: date
+                dateTimeColDataType: time_flow_start_ns
+                dateTimeType: DATETIME64
+                editorMode: sql
+                extrapolate: true
+                format: table
+                formattedQuery: |-
+                    SELECT
+                        time_flow_start_ns AS time,
+                        sum(bytes*sampling_rate) AS sumbytes
+                    FROM $table
+                    WHERE $timeFilter AND proto = 1 AND src_port = 517
+                    GROUP BY time
+                    ORDER BY sumbytes DESC
+                interval: ""
+                intervalFactor: 1
+                intervalMs: 1000
+                maxDataPoints: 43200
+                nullifySparse: false
+                query: |-
+                    SELECT
+                        time_flow_start_ns AS time,
+                        sum(bytes*sampling_rate) AS sumbytes
+                    FROM $table
+                    WHERE $timeFilter AND proto = 17 AND src_port = 517
+                    GROUP BY time
+                    ORDER BY sumbytes DESC
+                refId: A
+                round: 0s
+                skip_comments: true
+                table: flows_raw
+                useWindowFuncForMacros: true
+            - refId: B
+              datasourceUid: __expr__
+              model:
+                conditions:
+                    - evaluator:
+                        params: []
+                        type: gt
+                      operator:
+                        type: and
+                      query:
+                        params:
+                            - B
+                      reducer:
+                        params: []
+                        type: count
+                      type: query
+                datasource:
+                    type: __expr__
+                    uid: __expr__
+                expression: A
+                intervalMs: 1000
+                maxDataPoints: 43200
+                reducer: count
+                refId: B
+                type: reduce
+            - refId: C
+              datasourceUid: __expr__
+              model:
+                conditions:
+                    - evaluator:
+                        params:
+                            - 0
+                        type: gt
+                      operator:
+                        type: and
+                      query:
+                        params:
+                            - C
+                      reducer:
+                        params: []
+                        type: last
+                      type: query
+                datasource:
+                    type: __expr__
+                    uid: __expr__
+                expression: B
+                intervalMs: 1000
+                maxDataPoints: 43200
+                refId: C
+                type: threshold
+          noDataState: OK
+          execErrState: Error
+          annotations:
+            description: This alert is triggered if traffic is detected on UDP port 517 in NetFlow. This port is associated with Talk, a protocol with known security flaws.
+            summary: Traffic on Talk server port detected.
           isPaused: false
           notification_settings:
             receiver: example-test-email
