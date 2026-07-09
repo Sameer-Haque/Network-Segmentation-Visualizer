@@ -26,12 +26,11 @@
             }
         ]
     },
-    "description": "Metrics about the NetFlow+sFlow collector",
+    "description": "GoFlow2 Internal Metrics",
     "editable": true,
     "fiscalYearStartMonth": 0,
     "graphTooltip": 0,
-    "links":
-    [],
+    "links": [],
     "liveNow": false,
     "panels":
     [
@@ -2705,8 +2704,10 @@
     "revision": 1,
     "schemaVersion": 38,
     "style": "dark",
-    "tags":
-    [],
+    "tags": [
+      "Internals",
+      "GoFlow2"
+    ],
     "templating":
     {
         "list":
@@ -2746,7 +2747,7 @@
         ]
     },
     "timezone": "utc",
-    "title": "GoFlow - Internals",
+    "title": "GoFlow2 - Internal Metrics",
     "uid": "4U5xQZPmz",
     "version": 1,
     "weekStart": ""

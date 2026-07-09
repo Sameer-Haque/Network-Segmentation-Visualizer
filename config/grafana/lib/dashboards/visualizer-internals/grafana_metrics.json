@@ -18,35 +18,13 @@
       }
     ]
   },
-  "description": "Grafana Internal Metics Dashboards",
+  "description": "Grafana Internal Metrics",
   "editable": true,
   "gnetId": 3590,
   "graphTooltip": 0,
   "id": 11,
   "iteration": 1629593622583,
-  "links": [
-    {
-      "asDropdown": true,
-      "icon": "external link",
-      "keepTime": true,
-      "tags": [
-        "performance_overview"
-      ],
-      "title": "Performance Overview",
-      "type": "dashboards"
-    },
-    {
-      "asDropdown": false,
-      "icon": "external link",
-      "includeVars": false,
-      "keepTime": true,
-      "tags": [
-        "syslog"
-      ],
-      "title": "Syslog Overview",
-      "type": "dashboards"
-    }
-  ],
+  "links": [],
   "panels": [
     {
       "collapsed": false,
@@ -2705,9 +2683,8 @@
   "schemaVersion": 30,
   "style": "dark",
   "tags": [
-    "grafana",
-    "prometheus",
-    "performance_overview"
+    "Internals",
+    "Grafana"
   ],
   "templating": {
     "list": [
@@ -2841,7 +2818,7 @@
     ]
   },
   "timezone": "browser",
-  "title": "Performance Overview - Grafana",
+  "title": "Grafana - Internal Metrics",
   "uid": "o31DHUn7z",
   "version": 3
 }

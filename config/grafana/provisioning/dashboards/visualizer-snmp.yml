@@ -1,0 +1,12 @@
+apiVersion: 1
+
+providers:
+- name: 'VisualizerSNMPDashboards'
+  orgId: 1
+  folder: 'Visualizer - SNMP'
+  type: file
+  disableDeletion: false
+  editable: true
+  updateIntervalSeconds: 15
+  options:
+    path: /var/lib/grafana/dashboards/visualizer-snmp

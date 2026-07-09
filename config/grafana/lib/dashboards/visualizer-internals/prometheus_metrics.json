@@ -18,33 +18,12 @@
       }
     ]
   },
+  "description": "Prometheus Internal Metrics",
   "editable": true,
   "gnetId": null,
   "graphTooltip": 0,
   "id": 15,
-  "links": [
-    {
-      "asDropdown": true,
-      "icon": "external link",
-      "keepTime": true,
-      "tags": [
-        "performance_overview"
-      ],
-      "title": "Performance Overview",
-      "type": "dashboards"
-    },
-    {
-      "asDropdown": false,
-      "icon": "external link",
-      "includeVars": false,
-      "keepTime": true,
-      "tags": [
-        "syslog"
-      ],
-      "title": "Syslog Overview",
-      "type": "dashboards"
-    }
-  ],
+  "links": [],
   "panels": [
     {
       "datasource": "Prometheus",
@@ -1450,8 +1429,8 @@
   "schemaVersion": 30,
   "style": "dark",
   "tags": [
-    "prometheus",
-    "performance_overview"
+    "Internals",
+    "Prometheus"
   ],
   "templating": {
     "list": []
@@ -1487,7 +1466,7 @@
     ]
   },
   "timezone": "browser",
-  "title": "Performance Overview - Prometheus",
+  "title": "Prometheus - Internal Metrics",
   "uid": "g7Bov8n7z",
   "version": 6
 }

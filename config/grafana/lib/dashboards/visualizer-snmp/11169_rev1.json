@@ -911,8 +911,8 @@
   "schemaVersion": 19,
   "style": "dark",
   "tags": [
-    "Prometheus",
-    "snmp_exporter"
+    "Internals",
+    "Prometheus"
   ],
   "templating": {
     "list": [
