@@ -12,9 +12,14 @@ cisco_ooids = [
     "1.3.6.1.2.1.4.20.1.1"      #Router IP
 ]
 
-with open("config/node-map/snmp_devices.csv", "r") as f:
+SNMP_DEVICES_FILE = Path("/node-map/snmp_devices.csv")
+snmp_devices = []
+
+with open(SNMP_DEVICES_FILE, "r", newline="") as f:
     reader = csv.reader(f)
-    snmp_devices = list(reader)
+    for row in reader:
+        snmp_devices.append(row)
+        print(snmp_devices)
 
 def get_snmp_info(device,ooid):
     data = []

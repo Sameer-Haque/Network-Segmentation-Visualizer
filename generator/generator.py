@@ -177,7 +177,7 @@ def main():
     parser.add_argument("--community", default="public", help='SNMP community to scan (default: public)')
     parser.add_argument("--version", type=int, default=2, help='SNMP version to use for scan (default: 2)')
     parser.add_argument("--output-conf", default="../config/prometheus/prometheus.yml", help='Output file for Prometheus configuration (default: ../config/prometheus/prometheus.yml)')
-    parser.add_argument("--output-hosts", default="../config/node-map/snmp_devices.csv", help='Output file for node-map SNMP info (default: ../config/node-map/snmp_devices.csv)')
+    parser.add_argument("--output-hosts", default="../node-map/snmp_devices.csv", help='Output file for node-map SNMP info (default: ../node-map/snmp_devices.csv)')
     parser.add_argument("--mibdir", default=(os.getcwd() + "/mibs"), help='Directory to find SNMPv2-MIB in (default: ./mibs)')
 
     args = parser.parse_args()
@@ -209,7 +209,6 @@ def main():
         os.makedirs(os.path.dirname(nodemap_out), exist_ok=True)
         with open(nodemap_out, "w", newline="") as f:
             writer = csv.writer(f)
-            writer.writerow(["ip", "port", "community"])
             for h in hosts:
                 writer.writerow([h["ip"], "161", args.community])
         print(f"Wrote {nodemap_out}")
