@@ -1,0 +1,12 @@
+NetFlow / IPFIX:
+  Port Scan detection
+  Beaconing detection
+  New + rare talkers
+  Long-Lived Connections (DNS flow lasting for hours or something to detect tunneling)
+SNMP:
+  int flapping + physical changes
+  new mac addresses
+  arp table weirdness
+  routuing table weirdness
+  resource spikes + traffic spikes
+TODO ADD MORE
