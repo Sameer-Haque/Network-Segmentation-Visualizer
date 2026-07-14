@@ -20,8 +20,7 @@ BASE_MODULES = ["if_mib", "ip_mib", "ip_forward_mib", "system", "hrSystem", "hrD
 # Currently supported vendors:
 # - OpenWRT
 # - Cisco
-# - D-Link (untested)
-# - TODO: Support Mikrotik
+# - Mikrotik
 # Profile format:
 # - label = vendor name
 # - extra_modules = additional SNMP MIB modules supported by vendor
@@ -73,7 +72,33 @@ def get_local_network():
     prefix = "/24"
     network = str(ipaddress.IPv4Network(f"{ip}{prefix}", strict=False))
     print(f"Guessed {network}")
-    return network
+    return [network]
+
+#Parses --network values into a clean list of CIDR strings.
+
+def parse_networks(raw_networks):
+    networks = []
+    for item in raw_networks:
+        for piece in item.split(","):
+            piece = piece.strip()
+            if not piece:
+                continue
+            try:
+                net = ipaddress.IPv4Network(piece, strict=False)
+            except ValueError as e:
+                print(f"ERROR: invalid network '{piece}': {e}")
+                exit(1)
+            networks.append(str(net))
+
+    # De-duplicate while preserving order
+    seen = set()
+    deduped = []
+    for net in networks:
+        if net not in seen:
+            seen.add(net)
+            deduped.append(net)
+
+    return deduped
 
 # System vendors are identified via the presence of certain OIDs
 # and by keywords in SNMPv2-MIB sysDescr
@@ -91,8 +116,8 @@ def detect_vendor(sys_oid, sys_descr, nmap_hints):
 
     return None
 
-# nmap scan and snimpy data gathering
-def scan(network, community, version):
+# nmap scan and snimpy data gathering for a single network
+def scan_network(network, community, version):
     nm = nmap.PortScanner()
     # Run nmap with our args to scan for SNMP devices
     try:
@@ -102,11 +127,10 @@ def scan(network, community, version):
         print(f"nmap error message: {e}")
         exit(1)
 
-    print(f"SNMP hosts: {nm.all_hosts()}")
+    print(f"{network}: SNMP hosts: {nm.all_hosts()}")
 
     # Grab some device information using SNMPv2-MIB for identification
     hosts = []
-    load("SNMPv2-MIB")
     for ip in nm.all_hosts():
         agent = M(host=ip, community=community, version=version)
         sys_oid   = str(agent.sysObjectID or "")
@@ -126,9 +150,26 @@ def scan(network, community, version):
             "sys_oid":  sys_oid,
             "profile":  profile,
             "label":    profile["label"] if profile else "unknown",
+            "network":  network,
         })
 
     return hosts
+
+# Scans every provided network and returns a single de-duplicated host list.
+def scan(networks, community, version):
+    load("SNMPv2-MIB")
+
+    all_hosts = []
+    seen_ips = set()
+    for network in networks:
+        for host in scan_network(network, community, version):
+            if host["ip"] in seen_ips:
+                print(f"Warning: {host['ip']} already seen in a previous subnet scan, skipping duplicate")
+                continue
+            seen_ips.add(host["ip"])
+            all_hosts.append(host)
+
+    return all_hosts
 
 # Build Prometheus config for PyYAML dump
 def build_prometheus_config(hosts, auth):
@@ -146,7 +187,7 @@ def build_prometheus_config(hosts, auth):
         modules = BASE_MODULES + (h["profile"]["extra_modules"] if h["profile"] else [])
         snmp_jobs.append({
             "job_name": f"snmp_{h['label']}_{h['ip'].replace('.', '_')}",
-            "static_configs": [{"targets": [h["ip"]], "labels": {"vendor": h["label"], "hostname": h["hostname"]}}],
+            "static_configs": [{"targets": [h["ip"]], "labels": {"vendor": h["label"], "hostname": h["hostname"], "network": h["network"]}}],
             "metrics_path": "/snmp",
             "params": {"auth": [auth], "module": modules},
             "relabel_configs": [
@@ -173,7 +214,10 @@ def main():
                       epilog='For further details check the README')
 
     parser.add_argument("--auth", default="public_v2", help="snmp-exporter auth module to use for Prometheus (default: public_v2)")
-    parser.add_argument("--network", default=None, help='Network to scan in CIDR notation')
+    parser.add_argument("--network", nargs="+", default=None,
+                         help='Network(s) to scan in CIDR notation. Accepts multiple values '
+                              '(--network 10.0.0.0/24 10.0.1.0/24) and/or a comma-separated list '
+                              '(--network 10.0.0.0/24,10.0.1.0/24). Defaults to guessing a single /24.')
     parser.add_argument("--community", default="public", help='SNMP community to scan (default: public)')
     parser.add_argument("--version", type=int, default=2, help='SNMP version to use for scan (default: 2)')
     parser.add_argument("--output-conf", default="../config/prometheus/prometheus.yml", help='Output file for Prometheus configuration (default: ../config/prometheus/prometheus.yml)')
@@ -186,10 +230,12 @@ def main():
     snimpy.mib.path(args.mibdir + ":" + snimpy.mib.path())
     print(f"MIBDIRS = {snimpy.mib.path()}")
 
-    network = args.network or get_local_network()
-    hosts   = scan(network, args.community, args.version)
-    cfg     = build_prometheus_config(hosts, args.auth)
-    
+    networks = parse_networks(args.network) if args.network else get_local_network()
+    print(f"Scanning {len(networks)} network(s): {', '.join(networks)}")
+
+    hosts = scan(networks, args.community, args.version)
+    cfg   = build_prometheus_config(hosts, args.auth)
+
     # Warn if the script doesn't find any SNMP hosts at all
     if len(hosts) == 0:
         print("Warning: No SNMP hosts found")
