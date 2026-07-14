@@ -954,3 +954,782 @@ groups:
           isPaused: false
           notification_settings:
             receiver: example-test-email
+        - uid: ffs0jqsdnbpc0d
+          title: Unusual ICMP Message Type
+          condition: C
+          data:
+            - refId: A
+              relativeTimeRange:
+                from: 300
+                to: 0
+              datasourceUid: PDEE91DDB90597936
+              model:
+                adHocFilters: []
+                adHocValuesQuery: ""
+                add_metadata: true
+                contextWindowSize: "10"
+                database: default
+                dateColDataType: date
+                dateTimeColDataType: time_flow_start_ns
+                dateTimeType: DATETIME64
+                editorMode: sql
+                extrapolate: true
+                format: table
+                formattedQuery: |-
+                    SELECT
+                        time_flow_start_ns AS time,
+                        sum(bytes*sampling_rate) AS sumbytes
+                    FROM $table
+                    WHERE $timeFilter AND proto = 1 AND icmp_type NOT IN (0, )
+                    GROUP BY time
+                    ORDER BY sumbytes DESC
+                interval: ""
+                intervalFactor: 1
+                intervalMs: 1000
+                maxDataPoints: 43200
+                nullifySparse: false
+                query: |-
+                    SELECT
+                        time_flow_start_ns AS time,
+                        sum(bytes*sampling_rate) AS sumbytes
+                    FROM $table
+                    WHERE $timeFilter AND proto = 1 AND icmp_type NOT IN (0, 8)
+                    GROUP BY time
+                    ORDER BY sumbytes DESC
+                refId: A
+                round: 0s
+                skip_comments: true
+                table: flows_raw
+                useWindowFuncForMacros: true
+            - refId: B
+              datasourceUid: __expr__
+              model:
+                conditions:
+                    - evaluator:
+                        params: []
+                        type: gt
+                      operator:
+                        type: and
+                      query:
+                        params:
+                            - B
+                      reducer:
+                        params: []
+                        type: count
+                      type: query
+                datasource:
+                    type: __expr__
+                    uid: __expr__
+                expression: A
+                intervalMs: 1000
+                maxDataPoints: 43200
+                reducer: count
+                refId: B
+                type: reduce
+            - refId: C
+              datasourceUid: __expr__
+              model:
+                conditions:
+                    - evaluator:
+                        params:
+                            - 0
+                        type: gt
+                      operator:
+                        type: and
+                      query:
+                        params:
+                            - C
+                      reducer:
+                        params: []
+                        type: last
+                      type: query
+                datasource:
+                    type: __expr__
+                    uid: __expr__
+                expression: B
+                intervalMs: 1000
+                maxDataPoints: 43200
+                refId: C
+                type: threshold
+          noDataState: OK
+          execErrState: Error
+          annotations:
+            description: This alert is triggered if ICMP traffic other than Echo Requests and Echo Replies are detected.
+            summary: Unusual ICMP message types detected.
+          isPaused: false
+          notification_settings:
+            receiver: example-test-email
+        - uid: ffs0luhzk85xcd
+          title: ICMP TTL Exceeded
+          condition: C
+          data:
+            - refId: A
+              relativeTimeRange:
+                from: 300
+                to: 0
+              datasourceUid: PDEE91DDB90597936
+              model:
+                adHocFilters: []
+                adHocValuesQuery: ""
+                add_metadata: true
+                contextWindowSize: "10"
+                database: default
+                dateColDataType: date
+                dateTimeColDataType: time_flow_start_ns
+                dateTimeType: DATETIME64
+                editorMode: sql
+                extrapolate: true
+                format: table
+                formattedQuery: |-
+                    SELECT
+                        time_flow_start_ns AS time,
+                        sum(bytes*sampling_rate) AS sumbytes
+                    FROM $table
+                    WHERE $timeFilter AND proto = 1 AND icmp_type = 11 AN icmp_code = 0
+                    GROUP BY time
+                    ORDER BY sumbytes DESC
+                interval: ""
+                intervalFactor: 1
+                intervalMs: 1000
+                maxDataPoints: 43200
+                nullifySparse: false
+                query: |-
+                    SELECT
+                        time_flow_start_ns AS time,
+                        sum(bytes*sampling_rate) AS sumbytes
+                    FROM $table
+                    WHERE $timeFilter AND proto = 1 AND icmp_type = 11 AND icmp_code = 0
+                    GROUP BY time
+                    ORDER BY sumbytes DESC
+                refId: A
+                round: 0s
+                skip_comments: true
+                table: flows_raw
+                useWindowFuncForMacros: true
+            - refId: B
+              datasourceUid: __expr__
+              model:
+                conditions:
+                    - evaluator:
+                        params: []
+                        type: gt
+                      operator:
+                        type: and
+                      query:
+                        params:
+                            - B
+                      reducer:
+                        params: []
+                        type: count
+                      type: query
+                datasource:
+                    type: __expr__
+                    uid: __expr__
+                expression: A
+                intervalMs: 1000
+                maxDataPoints: 43200
+                reducer: count
+                refId: B
+                type: reduce
+            - refId: C
+              datasourceUid: __expr__
+              model:
+                conditions:
+                    - evaluator:
+                        params:
+                            - 0
+                        type: gt
+                      operator:
+                        type: and
+                      query:
+                        params:
+                            - C
+                      reducer:
+                        params: []
+                        type: last
+                      type: query
+                datasource:
+                    type: __expr__
+                    uid: __expr__
+                expression: B
+                intervalMs: 1000
+                maxDataPoints: 43200
+                refId: C
+                type: threshold
+          noDataState: OK
+          execErrState: Error
+          annotations:
+            description: This alert is triggered if ICMP TTL Exceeded messages are detected. This usually indicates the use of a traceroute utility, but may also indicate the existence of a routing loop.
+            summary: ICMP TTL Exceeded messages detected.
+          isPaused: false
+          notification_settings:
+            receiver: example-test-email
+        - uid: ffs0m38nbrcowe
+          title: ICMP Fragment Reassembly Time Exceeded
+          condition: C
+          data:
+            - refId: A
+              relativeTimeRange:
+                from: 300
+                to: 0
+              datasourceUid: PDEE91DDB90597936
+              model:
+                adHocFilters: []
+                adHocValuesQuery: ""
+                add_metadata: true
+                contextWindowSize: "10"
+                database: default
+                dateColDataType: date
+                dateTimeColDataType: time_flow_start_ns
+                dateTimeType: DATETIME64
+                editorMode: sql
+                extrapolate: true
+                format: table
+                formattedQuery: "SELECT\n    time_flow_start_ns AS time,\n    sum(bytes*sampling_rate) AS sumbytes\nFROM $table\nWHERE $timeFilter AND proto = 1 AND icmp_type = 11 AND icmp_code = \nGROUP BY time\nORDER BY sumbytes DESC"
+                interval: ""
+                intervalFactor: 1
+                intervalMs: 1000
+                maxDataPoints: 43200
+                nullifySparse: false
+                query: |-
+                    SELECT
+                        time_flow_start_ns AS time,
+                        sum(bytes*sampling_rate) AS sumbytes
+                    FROM $table
+                    WHERE $timeFilter AND proto = 1 AND icmp_type = 11 AND icmp_code = 1
+                    GROUP BY time
+                    ORDER BY sumbytes DESC
+                refId: A
+                round: 0s
+                skip_comments: true
+                table: flows_raw
+                useWindowFuncForMacros: true
+            - refId: B
+              datasourceUid: __expr__
+              model:
+                conditions:
+                    - evaluator:
+                        params: []
+                        type: gt
+                      operator:
+                        type: and
+                      query:
+                        params:
+                            - B
+                      reducer:
+                        params: []
+                        type: count
+                      type: query
+                datasource:
+                    type: __expr__
+                    uid: __expr__
+                expression: A
+                intervalMs: 1000
+                maxDataPoints: 43200
+                reducer: count
+                refId: B
+                type: reduce
+            - refId: C
+              datasourceUid: __expr__
+              model:
+                conditions:
+                    - evaluator:
+                        params:
+                            - 0
+                        type: gt
+                      operator:
+                        type: and
+                      query:
+                        params:
+                            - C
+                      reducer:
+                        params: []
+                        type: last
+                      type: query
+                datasource:
+                    type: __expr__
+                    uid: __expr__
+                expression: B
+                intervalMs: 1000
+                maxDataPoints: 43200
+                refId: C
+                type: threshold
+          noDataState: OK
+          execErrState: Error
+          annotations:
+            description: This alert is triggered if ICMP Fragment Reassembly Time Exceeded messages are detected. This can be caused by hosts sending malformed or crafted packets, or by packet loss.
+            summary: ICMP Fragment Reassembly Time Exceeded messages detected.
+          isPaused: false
+          notification_settings:
+            receiver: example-test-email
+        - uid: efs0mwl1ics8wa
+          title: ICMP Destination Unreachable (Common Codes)
+          condition: C
+          data:
+            - refId: A
+              relativeTimeRange:
+                from: 300
+                to: 0
+              datasourceUid: PDEE91DDB90597936
+              model:
+                adHocFilters: []
+                adHocValuesQuery: ""
+                add_metadata: true
+                contextWindowSize: "10"
+                database: default
+                dateColDataType: date
+                dateTimeColDataType: time_flow_start_ns
+                dateTimeType: DATETIME64
+                editorMode: sql
+                extrapolate: true
+                format: table
+                formattedQuery: |-
+                    SELECT
+                        time_flow_start_ns AS time,
+                        sum(bytes*sampling_rate) AS sumbytes
+                    FROM $table
+                    WHERE $timeFilter AND proto = 1 AND icmp_type = 3 A icmp_code IN (0, 1, 3, 6, 7)
+                    GROUP BY time
+                    ORDER BY sumbytes DESC
+                interval: ""
+                intervalFactor: 1
+                intervalMs: 1000
+                maxDataPoints: 43200
+                nullifySparse: false
+                query: |-
+                    SELECT
+                        time_flow_start_ns AS time,
+                        sum(bytes*sampling_rate) AS sumbytes
+                    FROM $table
+                    WHERE $timeFilter AND proto = 1 AND icmp_type = 3 AND icmp_code IN (0, 1, 3, 6, 7)
+                    GROUP BY time
+                    ORDER BY sumbytes DESC
+                refId: A
+                round: 0s
+                skip_comments: true
+                table: flows_raw
+                useWindowFuncForMacros: true
+            - refId: B
+              datasourceUid: __expr__
+              model:
+                conditions:
+                    - evaluator:
+                        params: []
+                        type: gt
+                      operator:
+                        type: and
+                      query:
+                        params:
+                            - B
+                      reducer:
+                        params: []
+                        type: count
+                      type: query
+                datasource:
+                    type: __expr__
+                    uid: __expr__
+                expression: A
+                intervalMs: 1000
+                maxDataPoints: 43200
+                reducer: count
+                refId: B
+                type: reduce
+            - refId: C
+              datasourceUid: __expr__
+              model:
+                conditions:
+                    - evaluator:
+                        params:
+                            - 0
+                        type: gt
+                      operator:
+                        type: and
+                      query:
+                        params:
+                            - C
+                      reducer:
+                        params: []
+                        type: last
+                      type: query
+                datasource:
+                    type: __expr__
+                    uid: __expr__
+                expression: B
+                intervalMs: 1000
+                maxDataPoints: 43200
+                refId: C
+                type: threshold
+          noDataState: OK
+          execErrState: Error
+          annotations:
+            description: This alert is triggered if ICMP Destination Unreachable messages using codes for unreachable or unknown hosts, networks, or ports are detected.
+            summary: ICMP Destination Unreachable messages detected with common codes.
+          isPaused: false
+          notification_settings:
+            receiver: example-test-email
+        - uid: cfs0n5v1kl0xsa
+          title: ICMP Destination Unreachable (Unusual Codes)
+          condition: C
+          data:
+            - refId: A
+              relativeTimeRange:
+                from: 300
+                to: 0
+              datasourceUid: PDEE91DDB90597936
+              model:
+                adHocFilters: []
+                adHocValuesQuery: ""
+                add_metadata: true
+                contextWindowSize: "10"
+                database: default
+                dateColDataType: date
+                dateTimeColDataType: time_flow_start_ns
+                dateTimeType: DATETIME64
+                editorMode: sql
+                extrapolate: true
+                format: table
+                formattedQuery: |-
+                    SELECT
+                        time_flow_start_ns AS time,
+                        sum(bytes*sampling_rate) AS sumbytes
+                    FROM $table
+                    WHERE $timeFilter AND proto = 1 AND icmp_type = 3 A icmp_code IN (2, 5, 8, 11, 12)
+                    GROUP BY time
+                    ORDER BY sumbytes DESC
+                interval: ""
+                intervalFactor: 1
+                intervalMs: 1000
+                maxDataPoints: 43200
+                nullifySparse: false
+                query: |-
+                    SELECT
+                        time_flow_start_ns AS time,
+                        sum(bytes*sampling_rate) AS sumbytes
+                    FROM $table
+                    WHERE $timeFilter AND proto = 1 AND icmp_type = 3 AND icmp_code IN (2, 5, 8, 11, 12)
+                    GROUP BY time
+                    ORDER BY sumbytes DESC
+                refId: A
+                round: 0s
+                skip_comments: true
+                table: flows_raw
+                useWindowFuncForMacros: true
+            - refId: B
+              datasourceUid: __expr__
+              model:
+                conditions:
+                    - evaluator:
+                        params: []
+                        type: gt
+                      operator:
+                        type: and
+                      query:
+                        params:
+                            - B
+                      reducer:
+                        params: []
+                        type: count
+                      type: query
+                datasource:
+                    type: __expr__
+                    uid: __expr__
+                expression: A
+                intervalMs: 1000
+                maxDataPoints: 43200
+                reducer: count
+                refId: B
+                type: reduce
+            - refId: C
+              datasourceUid: __expr__
+              model:
+                conditions:
+                    - evaluator:
+                        params:
+                            - 0
+                        type: gt
+                      operator:
+                        type: and
+                      query:
+                        params:
+                            - C
+                      reducer:
+                        params: []
+                        type: last
+                      type: query
+                datasource:
+                    type: __expr__
+                    uid: __expr__
+                expression: B
+                intervalMs: 1000
+                maxDataPoints: 43200
+                refId: C
+                type: threshold
+          noDataState: OK
+          execErrState: Error
+          annotations:
+            description: This alert is triggered if ICMP Destination Unreachable messages using codes for for unreachable protocols, failed source routes, isolated hosts, or type-of-service errors are detected.
+            summary: ICMP Destination Unreachable messages detected with unusual codes.
+          isPaused: false
+          notification_settings:
+            receiver: example-test-email
+        - uid: bfs0nf1uozgu8e
+          title: ICMP Destination Unreachable (Admin Policy Violation Codes)
+          condition: C
+          data:
+            - refId: A
+              relativeTimeRange:
+                from: 300
+                to: 0
+              datasourceUid: PDEE91DDB90597936
+              model:
+                adHocFilters: []
+                adHocValuesQuery: ""
+                add_metadata: true
+                contextWindowSize: "10"
+                database: default
+                dateColDataType: date
+                dateTimeColDataType: time_flow_start_ns
+                dateTimeType: DATETIME64
+                editorMode: sql
+                extrapolate: true
+                format: table
+                formattedQuery: |-
+                    SELECT
+                        time_flow_start_ns AS time,
+                        sum(bytes*sampling_rate) AS sumbytes
+                    FROM $table
+                    WHERE $timeFilter AND proto = 1 AND icmp_type = 3 AN icmp_code IN (9, 10, 13, 14, 15)
+                    GROUP BY time
+                    ORDER BY sumbytes DESC
+                interval: ""
+                intervalFactor: 1
+                intervalMs: 1000
+                maxDataPoints: 43200
+                nullifySparse: false
+                query: |-
+                    SELECT
+                        time_flow_start_ns AS time,
+                        sum(bytes*sampling_rate) AS sumbytes
+                    FROM $table
+                    WHERE $timeFilter AND proto = 1 AND icmp_type = 3 AND icmp_code IN (9, 10, 13, 14, 15)
+                    GROUP BY time
+                    ORDER BY sumbytes DESC
+                refId: A
+                round: 0s
+                skip_comments: true
+                table: flows_raw
+                useWindowFuncForMacros: true
+            - refId: B
+              datasourceUid: __expr__
+              model:
+                conditions:
+                    - evaluator:
+                        params: []
+                        type: gt
+                      operator:
+                        type: and
+                      query:
+                        params:
+                            - B
+                      reducer:
+                        params: []
+                        type: count
+                      type: query
+                datasource:
+                    type: __expr__
+                    uid: __expr__
+                expression: A
+                intervalMs: 1000
+                maxDataPoints: 43200
+                reducer: count
+                refId: B
+                type: reduce
+            - refId: C
+              datasourceUid: __expr__
+              model:
+                conditions:
+                    - evaluator:
+                        params:
+                            - 0
+                        type: gt
+                      operator:
+                        type: and
+                      query:
+                        params:
+                            - C
+                      reducer:
+                        params: []
+                        type: last
+                      type: query
+                datasource:
+                    type: __expr__
+                    uid: __expr__
+                expression: B
+                intervalMs: 1000
+                maxDataPoints: 43200
+                refId: C
+                type: threshold
+          noDataState: OK
+          execErrState: Error
+          annotations:
+            description: This alert is triggered if ICMP Destination Unreachable messages using codes for for administrative policy violations are detected. This typically indicates that traffic was blocked by a firewall or other network applicance.
+            summary: ICMP Destination Unreachable messages detected using codes for administrative policy violations.
+          isPaused: false
+          notification_settings:
+            receiver: example-test-email
+        - uid: bfs0p834abpj4a
+          title: TCP SYN-only Flow
+          condition: C
+          data:
+            - refId: A
+              relativeTimeRange:
+                from: 300
+                to: 0
+              datasourceUid: PDEE91DDB90597936
+              model:
+                adHocFilters: []
+                adHocValuesQuery: ""
+                add_metadata: true
+                contextWindowSize: "10"
+                database: default
+                dateColDataType: date
+                dateTimeColDataType: time_flow_start_ns
+                dateTimeType: DATETIME64
+                editorMode: sql
+                extrapolate: true
+                format: table
+                formattedQuery: |-
+                    SELECT count() AS value
+                    FROM $table
+                    WHERE $timeFilter
+                      AND proto = 6
+                      AND bitAnd(tcp_flags, 0x02) > 0
+                      AND bitAn(tcp_flags, 0x10) = 0
+                interval: ""
+                intervalFactor: 1
+                intervalMs: 1000
+                maxDataPoints: 43200
+                nullifySparse: false
+                query: |-
+                    SELECT count() AS value
+                    FROM $table
+                    WHERE $timeFilter
+                      AND proto = 6
+                      AND bitAnd(tcp_flags, 0x02) > 0
+                      AND bitAnd(tcp_flags, 0x10) = 0
+                refId: A
+                round: 0s
+                skip_comments: true
+                table: flows_raw
+                useWindowFuncForMacros: true
+            - refId: C
+              datasourceUid: __expr__
+              model:
+                conditions:
+                    - evaluator:
+                        params:
+                            - 0
+                        type: gt
+                      operator:
+                        type: and
+                      query:
+                        params:
+                            - C
+                      reducer:
+                        params: []
+                        type: last
+                      type: query
+                datasource:
+                    type: __expr__
+                    uid: __expr__
+                expression: A
+                intervalMs: 1000
+                maxDataPoints: 43200
+                refId: C
+                type: threshold
+          noDataState: OK
+          execErrState: Error
+          annotations:
+            description: This alert is triggered by any TCP flow which contains only SYN packets. This is abnormal behaviour and highly suspicious.
+            summary: A TCP flow containing only SYN packets was detected.
+          isPaused: false
+          notification_settings:
+            receiver: example-test-email
+        - uid: dfs0poast6fb4e
+          title: TCP RST Flow
+          condition: C
+          data:
+            - refId: A
+              relativeTimeRange:
+                from: 300
+                to: 0
+              datasourceUid: PDEE91DDB90597936
+              model:
+                adHocFilters: []
+                adHocValuesQuery: ""
+                add_metadata: true
+                contextWindowSize: "10"
+                database: default
+                dateColDataType: date
+                dateTimeColDataType: time_flow_start_ns
+                dateTimeType: DATETIME64
+                editorMode: sql
+                extrapolate: true
+                format: table
+                formattedQuery: |-
+                    SELECT count() AS value
+                    FROM $table
+                    WHERE $timeFilter
+                      AND proto = 6
+                      AND bitAn(tcp_flags, 0x04) > 0
+                interval: ""
+                intervalFactor: 1
+                intervalMs: 1000
+                maxDataPoints: 43200
+                nullifySparse: false
+                query: |-
+                    SELECT count() AS value
+                    FROM $table
+                    WHERE $timeFilter
+                      AND proto = 6
+                      AND bitAnd(tcp_flags, 0x04) > 0
+                refId: A
+                round: 0s
+                skip_comments: true
+                table: flows_raw
+                useWindowFuncForMacros: true
+            - refId: C
+              datasourceUid: __expr__
+              model:
+                conditions:
+                    - evaluator:
+                        params:
+                            - 0
+                            - 0
+                        type: gt
+                      operator:
+                        type: and
+                      query:
+                        params: []
+                      reducer:
+                        params: []
+                        type: avg
+                      type: query
+                datasource:
+                    name: Expression
+                    type: __expr__
+                    uid: __expr__
+                expression: A
+                hide: false
+                intervalMs: 1000
+                maxDataPoints: 43200
+                refId: C
+                type: threshold
+          noDataState: OK
+          execErrState: Error
+          annotations:
+            description: This alert is triggered by any TCP flow which contains RST packets. This is unusual and may indicate malicious activity or an access attempt on a firewalled or closed port.
+            summary: A TCP flow containing RST packets was detected.
+          isPaused: false
+          notification_settings:
+            receiver: example-test-email
