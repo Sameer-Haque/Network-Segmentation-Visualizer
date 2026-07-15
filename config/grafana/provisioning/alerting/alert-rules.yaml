@@ -980,7 +980,7 @@ groups:
                         time_flow_start_ns AS time,
                         sum(bytes*sampling_rate) AS sumbytes
                     FROM $table
-                    WHERE $timeFilter AND proto = 1 AND icmp_type NOT IN (0, )
+                    WHERE $timeFilter AND proto = 1 AND icmp_type NOT IN (0, 3, 8, 11)
                     GROUP BY time
                     ORDER BY sumbytes DESC
                 interval: ""
@@ -993,7 +993,7 @@ groups:
                         time_flow_start_ns AS time,
                         sum(bytes*sampling_rate) AS sumbytes
                     FROM $table
-                    WHERE $timeFilter AND proto = 1 AND icmp_type NOT IN (0, 8)
+                    WHERE $timeFilter AND proto = 1 AND icmp_type NOT IN (0, 3, 8, 11)
                     GROUP BY time
                     ORDER BY sumbytes DESC
                 refId: A
@@ -1054,7 +1054,7 @@ groups:
           noDataState: OK
           execErrState: Error
           annotations:
-            description: This alert is triggered if ICMP traffic other than Echo Requests and Echo Replies are detected.
+            description: This alert is triggered if ICMP message types other than Echo Request, Echo Reply, Destination Unreachable, and TTL Exceeded are detected.
             summary: Unusual ICMP message types detected.
           isPaused: false
           notification_settings:
@@ -1340,7 +1340,7 @@ groups:
                 conditions:
                     - evaluator:
                         params:
-                            - 0
+                            - 1000
                         type: gt
                       operator:
                         type: and
@@ -1362,8 +1362,8 @@ groups:
           noDataState: OK
           execErrState: Error
           annotations:
-            description: This alert is triggered if ICMP Destination Unreachable messages using codes for unreachable or unknown hosts, networks, or ports are detected.
-            summary: ICMP Destination Unreachable messages detected with common codes.
+            description: This alert is triggered if a large number of ICMP Destination Unreachable messages using codes for unreachable or unknown hosts, networks, or ports are detected.
+            summary: Large number of ICMP Destination Unreachable messages detected with common codes.
           isPaused: false
           notification_settings:
             receiver: example-test-email
@@ -1628,7 +1628,7 @@ groups:
                 conditions:
                     - evaluator:
                         params:
-                            - 0
+                            - 1000
                         type: gt
                       operator:
                         type: and
@@ -1650,8 +1650,8 @@ groups:
           noDataState: OK
           execErrState: Error
           annotations:
-            description: This alert is triggered by any TCP flow which contains only SYN packets. This is abnormal behaviour and highly suspicious.
-            summary: A TCP flow containing only SYN packets was detected.
+            description: This alert is triggered by a large number of TCP flows which contain only SYN packets. This can be a sign of abnormal network behaviour or TCP port scanning.
+            summary: A large number of TCP flows containing only SYN packets was detected.
           isPaused: false
           notification_settings:
             receiver: example-test-email
@@ -1704,8 +1704,7 @@ groups:
                 conditions:
                     - evaluator:
                         params:
-                            - 0
-                            - 0
+                            - 1000
                         type: gt
                       operator:
                         type: and
@@ -1728,8 +1727,8 @@ groups:
           noDataState: OK
           execErrState: Error
           annotations:
-            description: This alert is triggered by any TCP flow which contains RST packets. This is unusual and may indicate malicious activity or an access attempt on a firewalled or closed port.
-            summary: A TCP flow containing RST packets was detected.
+            description: This alert is triggered by a large number of TCP flows which contain RST packets. This is unusual and may indicate malicious activity or repeated access attempts on firewalled or closed ports.
+            summary: A large number of TCP flows containing RST packets was detected.
           isPaused: false
           notification_settings:
             receiver: example-test-email
