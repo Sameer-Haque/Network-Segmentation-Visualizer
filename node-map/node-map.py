@@ -178,6 +178,8 @@ while True:
         arptable.extend(get_snmp_info(device, cisco_ooids[0]))
     nodes = get_node_info(arptable,routerips)
     while i < len(nodes):
+        nodes[i][0] = nodes[i][0].strip('"')
+        nodes[i][1] = nodes[i][1].strip('"')
         if nodes[i][0] == "" or nodes[i][1] == "":
             nodes.pop(i)
             continue
