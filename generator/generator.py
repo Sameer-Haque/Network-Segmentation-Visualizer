@@ -121,7 +121,7 @@ def scan_network(network, community, version):
     nm = nmap.PortScanner()
     # Run nmap with our args to scan for SNMP devices
     try:
-        nm.scan(hosts=network, arguments="-sU -p161 --open -T4 -O --host-timeout 30s")
+        snmp_port_scan = nm.scan(hosts=network, arguments="-sU -p161 --open -T4 -O --host-timeout 30s")
     except Exception as e:
         print("nmap scan failed, remember to run this script as root")
         print(f"nmap error message: {e}")
@@ -132,6 +132,12 @@ def scan_network(network, community, version):
     # Grab some device information using SNMPv2-MIB for identification
     hosts = []
     for ip in nm.all_hosts():
+        # Check to make sure SNMP port is actually open and not filtered
+        snmp_port_status = snmp_port_scan['scan'][ip]['udp'][161]['state']
+        if snmp_port_status != "open":
+            print(f"Warning: {ip} UDP port 161 state is '{snmp_port_status}' instead of 'open', skipping")
+            continue
+
         agent = M(host=ip, community=community, version=version)
         sys_oid   = str(agent.sysObjectID or "")
         sys_descr = str(agent.sysDescr or "")
