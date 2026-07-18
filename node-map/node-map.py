@@ -79,6 +79,16 @@ def get_node_info(arptable, router_data):
             data[:] = [row for row in data if row[0] != key]
     for row in data:
         del row[0]
+    snmp_ips = {device[0] for device in snmp_devices}
+    arp_ips = {row[1].strip('"') for row in data}
+    missing_ips = snmp_ips - arp_ips
+    for ip in missing_ips:
+        device = next(device for device in snmp_devices if device[0] == ip)
+        ooid1 = f"1.3.6.1.2.1.4.20.1.2.{ip}"
+        intid = int(get_snmp_info(device, ooid1)[0].value)
+        ooid2 = f"1.3.6.1.2.1.2.2.1.6.{intid}"
+        mac = get_snmp_info(device, ooid2)[0].value.strip('"')
+        data.append([mac, ip])
     return data
     
 def conversion_gafana(arptable,edges,routerips):
