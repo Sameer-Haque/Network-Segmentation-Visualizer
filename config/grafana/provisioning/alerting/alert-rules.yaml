@@ -1,6 +1,509 @@
 apiVersion: 1
 groups:
     - orgId: 1
+      name: snmp-temp
+      folder: Visualizer - SNMP
+      interval: 1m
+      rules:
+        - uid: afsf9jlzoirk0f
+          title: SNMP Device High Memory Usage
+          condition: C
+          data:
+            - refId: A
+              relativeTimeRange:
+                from: 300
+                to: 0
+              datasourceUid: PBFA97CFB590B2093
+              model:
+                datasource:
+                    type: prometheus
+                    uid: PBFA97CFB590B2093
+                editorMode: builder
+                expr: (hrStorageUsed{hrStorageDescr=~"Physical memory|main memory"} * 100) / hrStorageSize{hrStorageDescr=~"Physical memory|main memory"}
+                instant: true
+                intervalMs: 1000
+                legendFormat: __auto
+                maxDataPoints: 43200
+                range: false
+                refId: A
+            - refId: C
+              queryType: expression
+              datasourceUid: __expr__
+              model:
+                conditions:
+                    - evaluator:
+                        params:
+                            - 90
+                        type: gte
+                      operator:
+                        type: and
+                      query:
+                        params:
+                            - C
+                      reducer:
+                        params: []
+                        type: last
+                      type: query
+                datasource:
+                    type: __expr__
+                    uid: __expr__
+                expression: A
+                intervalMs: 1000
+                maxDataPoints: 43200
+                refId: C
+                type: threshold
+          noDataState: OK
+          execErrState: Error
+          for: 5m
+          annotations:
+            description: This alert is triggered if an SNMP device is at an average 90% memory usage or higher for at least 5 minutes continously.
+            summary: SNMP device running out of memory.
+          isPaused: false
+          notification_settings:
+            receiver: example-test-email
+        - uid: cfsfa4kgofxmoe
+          title: SNMP Device High CPU Usage
+          condition: C
+          data:
+            - refId: A
+              relativeTimeRange:
+                from: 300
+                to: 0
+              datasourceUid: PBFA97CFB590B2093
+              model:
+                datasource:
+                    type: prometheus
+                    uid: PBFA97CFB590B2093
+                editorMode: builder
+                expr: hrProcessorLoad
+                instant: true
+                intervalMs: 1000
+                legendFormat: __auto
+                maxDataPoints: 43200
+                range: false
+                refId: A
+            - refId: C
+              queryType: expression
+              datasourceUid: __expr__
+              model:
+                conditions:
+                    - evaluator:
+                        params:
+                            - 90
+                        type: gte
+                      operator:
+                        type: and
+                      query:
+                        params:
+                            - C
+                      reducer:
+                        params: []
+                        type: last
+                      type: query
+                datasource:
+                    type: __expr__
+                    uid: __expr__
+                expression: A
+                intervalMs: 1000
+                maxDataPoints: 43200
+                refId: C
+                type: threshold
+          noDataState: OK
+          execErrState: Error
+          for: 5m
+          annotations:
+            description: This alert is triggered if an SNMP device is at an average 90% CPU usage or higher for at least 5 minutes continously.
+            summary: SNMP device running at very high CPU usage.
+          isPaused: false
+          notification_settings:
+            receiver: example-test-email
+        - uid: ffsfat40dh81sd
+          title: OpenWRT SNMP Device Low Available Storage on /
+          condition: C
+          data:
+            - refId: A
+              relativeTimeRange:
+                from: 300
+                to: 0
+              datasourceUid: PBFA97CFB590B2093
+              model:
+                datasource:
+                    type: prometheus
+                    uid: PBFA97CFB590B2093
+                editorMode: builder
+                expr: (hrStorageUsed{hrStorageType="1.3.6.1.2.1.25.2.1.4", vendor="openwrt", hrStorageDescr="/"} * 100) / hrStorageSize{hrStorageType="1.3.6.1.2.1.25.2.1.4"}
+                instant: true
+                intervalMs: 1000
+                legendFormat: __auto
+                maxDataPoints: 43200
+                range: false
+                refId: A
+            - refId: C
+              queryType: expression
+              datasourceUid: __expr__
+              model:
+                conditions:
+                    - evaluator:
+                        params:
+                            - 95
+                        type: gte
+                      operator:
+                        type: and
+                      query:
+                        params:
+                            - C
+                      reducer:
+                        params: []
+                        type: last
+                      type: query
+                datasource:
+                    type: __expr__
+                    uid: __expr__
+                expression: A
+                intervalMs: 1000
+                maxDataPoints: 43200
+                refId: C
+                type: threshold
+          noDataState: OK
+          execErrState: Error
+          for: 5m
+          annotations:
+            description: This alert is triggered if an OpenWRT SNMP device is at an average 95% or higher used storage space on / for at least 5 minutes continously.
+            summary: OpenWRT SNMP device is running out of storage space.
+          isPaused: false
+          notification_settings:
+            receiver: example-test-email
+        - uid: afsfbqo8ee22of
+          title: SNMP Device Network Send Errors
+          condition: C
+          data:
+            - refId: A
+              relativeTimeRange:
+                from: 300
+                to: 0
+              datasourceUid: PBFA97CFB590B2093
+              model:
+                datasource:
+                    type: prometheus
+                    uid: PBFA97CFB590B2093
+                editorMode: builder
+                expr: irate(ifOutErrors{ifDescr!="lo"}[5m])
+                instant: true
+                intervalMs: 1000
+                legendFormat: __auto
+                maxDataPoints: 43200
+                range: false
+                refId: A
+            - refId: C
+              queryType: expression
+              datasourceUid: __expr__
+              model:
+                conditions:
+                    - evaluator:
+                        params:
+                            - 100
+                        type: gt
+                      operator:
+                        type: and
+                      query:
+                        params:
+                            - C
+                      reducer:
+                        params: []
+                        type: last
+                      type: query
+                datasource:
+                    type: __expr__
+                    uid: __expr__
+                expression: A
+                intervalMs: 1000
+                maxDataPoints: 43200
+                refId: C
+                type: threshold
+          noDataState: OK
+          execErrState: Error
+          annotations:
+            description: This alert is triggered if an SNMP device experiences a large number of packets which it cannot send properly due to errors, within a 5 minute period.
+            summary: SNMP device encountering large number of network send errors.
+          isPaused: false
+          notification_settings:
+            receiver: example-test-email
+        - uid: ffsfbxgvlvrwgd
+          title: SNMP Device Network Receive Errors
+          condition: C
+          data:
+            - refId: A
+              relativeTimeRange:
+                from: 300
+                to: 0
+              datasourceUid: PBFA97CFB590B2093
+              model:
+                datasource:
+                    type: prometheus
+                    uid: PBFA97CFB590B2093
+                editorMode: builder
+                expr: irate(ifInErrors{ifDescr!="lo"}[5m])
+                instant: true
+                intervalMs: 1000
+                legendFormat: __auto
+                maxDataPoints: 43200
+                range: false
+                refId: A
+            - refId: C
+              queryType: expression
+              datasourceUid: __expr__
+              model:
+                conditions:
+                    - evaluator:
+                        params:
+                            - 100
+                        type: gt
+                      operator:
+                        type: and
+                      query:
+                        params:
+                            - C
+                      reducer:
+                        params: []
+                        type: last
+                      type: query
+                datasource:
+                    type: __expr__
+                    uid: __expr__
+                expression: A
+                intervalMs: 1000
+                maxDataPoints: 43200
+                refId: C
+                type: threshold
+          noDataState: OK
+          execErrState: Error
+          annotations:
+            description: This alert is triggered if an SNMP device experiences a large number of packets which it cannot receive properly due to errors, within the last 5 minutes.
+            summary: SNMP device encountering large number of network receive errors.
+          isPaused: false
+          notification_settings:
+            receiver: example-test-email
+        - uid: bfsfchcr2adc0d
+          title: SNMP Device Discarding Inbound Packets
+          condition: C
+          data:
+            - refId: A
+              relativeTimeRange:
+                from: 300
+                to: 0
+              datasourceUid: PBFA97CFB590B2093
+              model:
+                datasource:
+                    type: prometheus
+                    uid: PBFA97CFB590B2093
+                editorMode: builder
+                expr: irate(ifInDiscards{ifDescr!="lo"}[5m])
+                instant: true
+                intervalMs: 1000
+                legendFormat: __auto
+                maxDataPoints: 43200
+                range: false
+                refId: A
+            - refId: C
+              queryType: expression
+              datasourceUid: __expr__
+              model:
+                conditions:
+                    - evaluator:
+                        params:
+                            - 1000
+                        type: gt
+                      operator:
+                        type: and
+                      query:
+                        params:
+                            - C
+                      reducer:
+                        params: []
+                        type: last
+                      type: query
+                datasource:
+                    type: __expr__
+                    uid: __expr__
+                expression: A
+                intervalMs: 1000
+                maxDataPoints: 43200
+                refId: C
+                type: threshold
+          noDataState: OK
+          execErrState: Error
+          annotations:
+            description: This alert is triggered if an SNMP device has discarded at least 1000 inbound network packets in the last 5 minutes. One possible reason this may occur is due to a lack of buffer space.
+            summary: SNMP device has been detected discarding inbound network packets.
+          isPaused: false
+          notification_settings:
+            receiver: example-test-email
+        - uid: cfsfcs3f3y2gwb
+          title: SNMP Device Discarding Outbound Packets
+          condition: C
+          data:
+            - refId: A
+              relativeTimeRange:
+                from: 300
+                to: 0
+              datasourceUid: PBFA97CFB590B2093
+              model:
+                datasource:
+                    type: prometheus
+                    uid: PBFA97CFB590B2093
+                editorMode: builder
+                expr: irate(ifOutDiscards{ifDescr!="lo"}[5m])
+                instant: true
+                intervalMs: 1000
+                legendFormat: __auto
+                maxDataPoints: 43200
+                range: false
+                refId: A
+            - refId: C
+              queryType: expression
+              datasourceUid: __expr__
+              model:
+                conditions:
+                    - evaluator:
+                        params:
+                            - 1000
+                        type: gt
+                      operator:
+                        type: and
+                      query:
+                        params:
+                            - C
+                      reducer:
+                        params: []
+                        type: last
+                      type: query
+                datasource:
+                    type: __expr__
+                    uid: __expr__
+                expression: A
+                intervalMs: 1000
+                maxDataPoints: 43200
+                refId: C
+                type: threshold
+          noDataState: OK
+          execErrState: Error
+          annotations:
+            description: This alert is triggered if an SNMP device has discarded at least 1000 outbound network packets in the last 5 minutes. One possible reason this may occur is due to a lack of buffer space.
+            summary: SNMP device has been detected discarding outbound network packets.
+          isPaused: false
+          notification_settings:
+            receiver: example-test-email
+        - uid: ffsfd1xwj79q8d
+          title: SNMP Device Received Unknown Protocol
+          condition: C
+          data:
+            - refId: A
+              relativeTimeRange:
+                from: 300
+                to: 0
+              datasourceUid: PBFA97CFB590B2093
+              model:
+                datasource:
+                    type: prometheus
+                    uid: PBFA97CFB590B2093
+                editorMode: builder
+                expr: irate(ifInUnknownProtos{ifDescr!="lo"}[5m])
+                instant: true
+                intervalMs: 1000
+                legendFormat: __auto
+                maxDataPoints: 43200
+                range: false
+                refId: A
+            - refId: C
+              queryType: expression
+              datasourceUid: __expr__
+              model:
+                conditions:
+                    - evaluator:
+                        params:
+                            - 0
+                        type: gt
+                      operator:
+                        type: and
+                      query:
+                        params:
+                            - C
+                      reducer:
+                        params: []
+                        type: last
+                      type: query
+                datasource:
+                    type: __expr__
+                    uid: __expr__
+                expression: A
+                intervalMs: 1000
+                maxDataPoints: 43200
+                refId: C
+                type: threshold
+          noDataState: OK
+          execErrState: Error
+          annotations:
+            description: This alert is triggered if an SNMP device discards packets because the protocol used is not known to the router.
+            summary: SNMP device has been discarding inbound packets due to unknown protocol.
+          isPaused: false
+          notification_settings:
+            receiver: example-test-email
+        - uid: afsfdcog51gqob
+          title: SNMP Device Network Interface Missing
+          condition: C
+          data:
+            - refId: A
+              relativeTimeRange:
+                from: 300
+                to: 0
+              datasourceUid: PBFA97CFB590B2093
+              model:
+                datasource:
+                    type: prometheus
+                    uid: PBFA97CFB590B2093
+                editorMode: builder
+                expr: ifOperStatus
+                instant: true
+                intervalMs: 1000
+                legendFormat: __auto
+                maxDataPoints: 43200
+                range: false
+                refId: A
+            - refId: C
+              queryType: expression
+              datasourceUid: __expr__
+              model:
+                conditions:
+                    - evaluator:
+                        params:
+                            - 6
+                        type: eq
+                      operator:
+                        type: and
+                      query:
+                        params:
+                            - C
+                      reducer:
+                        params: []
+                        type: last
+                      type: query
+                datasource:
+                    type: __expr__
+                    uid: __expr__
+                expression: A
+                intervalMs: 1000
+                maxDataPoints: 43200
+                refId: C
+                type: threshold
+          noDataState: OK
+          execErrState: Error
+          annotations:
+            description: This alert is triggered if an SNMP device marks an interface as down due to missing components. This may be due to physical hardware removal or malfunction.
+            summary: SNMP device has a network interface which is missing.
+          isPaused: false
+          notification_settings:
+            receiver: example-test-email
+    - orgId: 1
       name: Security Alerts
       folder: Visualizer - NetFlow
       interval: 5m
@@ -102,6 +605,8 @@ groups:
                 maxDataPoints: 43200
                 refId: C
                 type: threshold
+          dashboardUid: ""
+          panelId: 0
           noDataState: OK
           execErrState: Error
           annotations:
@@ -207,6 +712,8 @@ groups:
                 maxDataPoints: 43200
                 refId: C
                 type: threshold
+          dashboardUid: ""
+          panelId: 0
           noDataState: OK
           execErrState: Error
           annotations:
@@ -316,6 +823,8 @@ groups:
                 maxDataPoints: 43200
                 refId: C
                 type: threshold
+          dashboardUid: ""
+          panelId: 0
           noDataState: OK
           execErrState: Error
           annotations:
@@ -421,6 +930,8 @@ groups:
                 maxDataPoints: 43200
                 refId: C
                 type: threshold
+          dashboardUid: ""
+          panelId: 0
           noDataState: OK
           execErrState: Error
           annotations:
@@ -526,6 +1037,8 @@ groups:
                 maxDataPoints: 43200
                 refId: C
                 type: threshold
+          dashboardUid: ""
+          panelId: 0
           noDataState: OK
           execErrState: Error
           annotations:
@@ -631,6 +1144,8 @@ groups:
                 maxDataPoints: 43200
                 refId: C
                 type: threshold
+          dashboardUid: ""
+          panelId: 0
           noDataState: OK
           execErrState: Error
           annotations:
@@ -736,6 +1251,8 @@ groups:
                 maxDataPoints: 43200
                 refId: C
                 type: threshold
+          dashboardUid: ""
+          panelId: 0
           noDataState: OK
           execErrState: Error
           annotations:
@@ -841,6 +1358,8 @@ groups:
                 maxDataPoints: 43200
                 refId: C
                 type: threshold
+          dashboardUid: ""
+          panelId: 0
           noDataState: OK
           execErrState: Error
           annotations:
@@ -946,6 +1465,8 @@ groups:
                 maxDataPoints: 43200
                 refId: C
                 type: threshold
+          dashboardUid: ""
+          panelId: 0
           noDataState: OK
           execErrState: Error
           annotations:
@@ -1051,6 +1572,8 @@ groups:
                 maxDataPoints: 43200
                 refId: C
                 type: threshold
+          dashboardUid: ""
+          panelId: 0
           noDataState: OK
           execErrState: Error
           annotations:
@@ -1137,7 +1660,7 @@ groups:
                 conditions:
                     - evaluator:
                         params:
-                            - 0
+                            - 1000
                         type: gt
                       operator:
                         type: and
@@ -1156,6 +1679,8 @@ groups:
                 maxDataPoints: 43200
                 refId: C
                 type: threshold
+          dashboardUid: ""
+          panelId: 0
           noDataState: OK
           execErrState: Error
           annotations:
@@ -1254,6 +1779,8 @@ groups:
                 maxDataPoints: 43200
                 refId: C
                 type: threshold
+          dashboardUid: ""
+          panelId: 0
           noDataState: OK
           execErrState: Error
           annotations:
@@ -1359,6 +1886,8 @@ groups:
                 maxDataPoints: 43200
                 refId: C
                 type: threshold
+          dashboardUid: ""
+          panelId: 0
           noDataState: OK
           execErrState: Error
           annotations:
@@ -1464,6 +1993,8 @@ groups:
                 maxDataPoints: 43200
                 refId: C
                 type: threshold
+          dashboardUid: ""
+          panelId: 0
           noDataState: OK
           execErrState: Error
           annotations:
@@ -1569,6 +2100,8 @@ groups:
                 maxDataPoints: 43200
                 refId: C
                 type: threshold
+          dashboardUid: ""
+          panelId: 0
           noDataState: OK
           execErrState: Error
           annotations:
@@ -1647,6 +2180,8 @@ groups:
                 maxDataPoints: 43200
                 refId: C
                 type: threshold
+          dashboardUid: ""
+          panelId: 0
           noDataState: OK
           execErrState: Error
           annotations:
@@ -1724,6 +2259,8 @@ groups:
                 maxDataPoints: 43200
                 refId: C
                 type: threshold
+          dashboardUid: ""
+          panelId: 0
           noDataState: OK
           execErrState: Error
           annotations:
