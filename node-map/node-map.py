@@ -28,6 +28,11 @@ def get_snmp_info(device,ooid):
         data.append(row)
     return data
 
+def get_snmp_info2(device,ooid):
+    data = []
+    session = Session(hostname=device[0], community=device[2], version=2, remote_port=int(device[1]), use_numeric=True, use_sprint_value=True)
+    return session.get(ooid)
+
 def traceroute(ip):
     result = subprocess.run(
         ["traceroute", "-n", "-q", "1", ip],
@@ -85,9 +90,9 @@ def get_node_info(arptable, router_data):
     for ip in missing_ips:
         device = next(device for device in snmp_devices if device[0] == ip)
         ooid1 = f"1.3.6.1.2.1.4.20.1.2.{ip}"
-        intid = int(get_snmp_info(device, ooid1)[0].value)
+        intid = int(get_snmp_info2(device, ooid1).value)
         ooid2 = f"1.3.6.1.2.1.2.2.1.6.{intid}"
-        mac = get_snmp_info(device, ooid2)[0].value.strip('"')
+        mac = get_snmp_info2(device, ooid2).value.strip('"')
         data.append([mac, ip])
     return data
     
