@@ -1,7 +1,7 @@
 apiVersion: 1
 groups:
     - orgId: 1
-      name: snmp-temp
+      name: SNMP Security Alerts
       folder: Visualizer - SNMP
       interval: 1m
       rules:
@@ -504,7 +504,7 @@ groups:
           notification_settings:
             receiver: example-test-email
     - orgId: 1
-      name: Security Alerts
+      name: NetFlow Security Alerts
       folder: Visualizer - NetFlow
       interval: 5m
       rules:
